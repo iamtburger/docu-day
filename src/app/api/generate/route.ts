@@ -10,7 +10,6 @@ import { s3 } from "@/app/s3Client/s3Client";
 
 export async function POST(req: NextRequest) {
 	const body = await req.json();
-
 	const urls = await Promise.all(
 		body.params.map(async (param: any) => {
 			try {

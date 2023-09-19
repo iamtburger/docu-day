@@ -27,47 +27,45 @@ enum FileUploadStatus {
 
 interface FileWithStatus {
 	file: File;
+	key: string;
+	type: string;
 	fileName?: string;
 	status?: FileUploadStatus;
 	fileUploadUrl?: any;
-	key: string;
-	type: string;
 }
 
-interface SelectedFiles {
-	[key: string]: FileWithStatus;
-}
+// interface SelectedFiles {
+// 	[key: string]: FileWithStatus;
+// }
+
+type SelectedFiles = FileWithStatus[];
 
 const FileUpload = () => {
-	const [selectedFiles, setSelectedFiles] = useState<{
-		[key: string]: FileWithStatus;
-	}>({});
+	const [selectedFiles, setSelectedFiles] = useState<FileWithStatus[]>([]);
 
 	const selectFiles = (files: FileList | null) => {
-		let validFiles: SelectedFiles = {};
+		let validFiles: FileWithStatus[] = [];
 		if (files?.length !== undefined) {
 			for (let i = 0; i < files?.length; i++) {
 				const file = files.item(i);
 				if (file?.size !== undefined) {
-					validFiles = {
+					validFiles = [
 						...validFiles,
-						[file.name]: {
+						{
 							file: file,
 							status: FileUploadStatus.NOT_STARTED,
 							key: file.name,
 							type: file.type,
+							fileName: file.name,
 						},
-					};
+					];
 				}
 			}
 		}
 		setSelectedFiles(validFiles);
 	};
 
-	const removeFileFromSelection = (fileName: string) => {
-		let { [fileName]: undefined, ...rest } = selectedFiles;
-		setSelectedFiles(rest);
-	};
+	const removeFileFromSelection = (fileName: string) => {};
 
 	const areFilesSelected = Object.keys(selectedFiles).length > 0;
 
@@ -77,19 +75,18 @@ const FileUpload = () => {
 			<DialogContent>
 				{areFilesSelected ? (
 					<Box m={4}>
-						{Object.values(selectedFiles).map((selectedFile) => {
+						{selectedFiles.map((selectedFile) => {
 							return (
 								<SelectedFileRow
 									key={selectedFile.file.name}
 									selectedFile={selectedFile}
 									editFileName={(fileName) => {
-										setSelectedFiles((prevState) => ({
-											...prevState,
-											[selectedFile.file.name]: {
-												...selectedFile,
-												key: fileName,
-											},
-										}));
+										const updatedFileList = selectedFiles.map((file) =>
+											file.key === selectedFile.key
+												? { ...file, fileName }
+												: file
+										);
+										setSelectedFiles(updatedFileList);
 									}}
 									removeFileFromSelection={() =>
 										removeFileFromSelection(selectedFile.file.name)
@@ -119,13 +116,11 @@ const FileUpload = () => {
 					{areFilesSelected && (
 						<Button
 							onClick={async () => {
-								let params = Object.values(selectedFiles).map(
-									(selectedFile) => ({
-										bucketName: "docs",
-										key: selectedFile.key,
-										fileType: selectedFile.file.type,
-									})
-								);
+								let params = selectedFiles.map((selectedFile) => ({
+									bucketName: "docs",
+									key: selectedFile.fileName,
+									fileType: selectedFile.file.type,
+								}));
 
 								const response = await fetch(
 									"http://localhost:3000/api/generate",
@@ -136,15 +131,14 @@ const FileUpload = () => {
 								);
 								const { urls } = await response.json();
 
-								for (let selectedFileKey in selectedFiles) {
-									const selectedFile = selectedFiles[selectedFileKey];
+								for (let selectedFile of selectedFiles) {
 									const selectedFileUploadUrl = urls.find(
-										(url: { key: string }) => url.key === selectedFile.key
+										(url: { key: string }) => url.key === selectedFile.fileName
 									);
 									setPendingStatus(
 										setSelectedFiles,
 										selectedFiles,
-										selectedFileKey
+										selectedFile.key
 									);
 
 									fetch(selectedFileUploadUrl?.url, {
@@ -159,7 +153,7 @@ const FileUpload = () => {
 												setSuccessStatus(
 													setSelectedFiles,
 													selectedFiles,
-													selectedFileKey
+													selectedFile.key
 												);
 											} else {
 												throw new Error(
@@ -171,7 +165,7 @@ const FileUpload = () => {
 											setErrorStatus(
 												setSelectedFiles,
 												selectedFiles,
-												selectedFileKey
+												selectedFile.key
 											);
 											console.error(e);
 										});
@@ -206,6 +200,9 @@ const SelectedFileRow = ({
 }: SelectedFileRowProps) => {
 	const [isFileNameEditable, setIsFileNameEditable] = useState(false);
 	const [showEditIcon, setShowEditIcon] = useState(false);
+	const [updatedFileName, setUpdatedFileName] = useState(
+		selectedFile.file.name
+	);
 	const { status } = selectedFile;
 
 	return (
@@ -220,17 +217,20 @@ const SelectedFileRow = ({
 		>
 			<div
 				style={{ display: "flex", height: "32px", fontFamily: "inherit" }}
-				onBlur={() => setIsFileNameEditable(false)}
+				onBlur={() => {
+					editFileName(updatedFileName);
+					setIsFileNameEditable(false);
+				}}
 			>
 				{isFileNameEditable ? (
 					<TextField
 						variant="standard"
-						value={selectedFile.key}
-						onChange={(e) => editFileName(e.target.value)}
+						value={updatedFileName}
+						onChange={(e) => setUpdatedFileName(e.target.value)}
 						autoFocus
 					/>
 				) : (
-					<div>{selectedFile.key}</div>
+					<div>{updatedFileName}</div>
 				)}
 				{showEditIcon && (
 					<EditIcon
@@ -248,11 +248,7 @@ const SelectedFileRow = ({
 	);
 };
 
-type SetSelectedFilesState = Dispatch<
-	SetStateAction<{
-		[key: string]: FileWithStatus;
-	}>
->;
+type SetSelectedFilesState = Dispatch<SetStateAction<FileWithStatus[]>>;
 
 function updateStatus(status: FileUploadStatus) {
 	return (
@@ -260,13 +256,12 @@ function updateStatus(status: FileUploadStatus) {
 		files: SelectedFiles,
 		key: string
 	) => {
-		setState((prevState: SelectedFiles) => ({
-			...prevState,
-			[key]: {
-				...files[key],
-				status,
-			},
-		}));
+		setState((prevState) => {
+			const updatedFilesList = prevState.map((file) =>
+				file.key === key ? { ...file, status } : file
+			);
+			return updatedFilesList;
+		});
 	};
 }
 

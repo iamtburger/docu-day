@@ -1,6 +1,19 @@
-import { Button, Card, CardContent, Input, Typography } from "@mui/material";
+import {
+	Button,
+	Card,
+	CardContent,
+	Grid,
+	Input,
+	Typography,
+} from "@mui/material";
 import FileUpload from "./components/FileUpload/FileUpload";
 import Link from "next/link";
+import Image from "next/image";
+import ArticleIcon from "@mui/icons-material/Article";
+import ImageIcon from "@mui/icons-material/Image";
+import NotesIcon from "@mui/icons-material/Notes";
+import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 export default function Home() {
 	return (
