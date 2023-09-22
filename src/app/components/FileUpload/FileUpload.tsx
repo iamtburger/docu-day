@@ -78,7 +78,9 @@ const FileUpload = () => {
 
 	return (
 		<Dialog>
-			<DialogTrigger>Upload Files</DialogTrigger>
+			<DialogTrigger asChild>
+				<Button className="ml-2">Upload Documents</Button>
+			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>File upload</DialogTitle>

@@ -20,6 +20,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { Download, ArrowUpDown, MoreHorizontal } from "lucide-react";
 
 const formSchema = z.object({
 	username: z.string().min(2).max(40),
@@ -53,9 +54,10 @@ function CreateEvent() {
 		}
 	}, [user, form]);
 
+	// TODO: fix padding on first div
 	return (
 		<div className="grid lg:grid-cols-6 md:grid-cols-3 sm:grid-cols-1 gap-3 lg:pl-24 md:pl-16 pl-8 lg:pr-24 md:pr-16 pr-8 pt-12">
-			<div className="col-span-3">
+			<div className="col-span-3 p-10">
 				<Form {...form}>
 					<FormField
 						control={form.control}
@@ -164,6 +166,7 @@ const columnDefinitions: ColumnDef<EventDocument>[] = [
 					table.toggleAllPageRowsSelected(Boolean(value))
 				}
 				aria-label="Select all"
+				className="mt-1"
 			/>
 		),
 		cell: ({ row }) => (
@@ -171,6 +174,7 @@ const columnDefinitions: ColumnDef<EventDocument>[] = [
 				checked={row.getIsSelected()}
 				onCheckedChange={(value) => row.toggleSelected(Boolean(value))}
 				aria-label="Select row"
+				className="mt-1"
 			/>
 		),
 		enableSorting: false,
@@ -178,15 +182,36 @@ const columnDefinitions: ColumnDef<EventDocument>[] = [
 	},
 	{
 		accessorKey: "name",
-		header: "Name",
+		header: ({ column }) => (
+			<div
+				onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+				className="pl-0 flex align-middle "
+			>
+				Name
+				<ArrowUpDown className="ml-2 h-4 w-4 self-center cursor-pointer" />
+			</div>
+		),
 	},
 	{
 		accessorKey: "createdAt",
-		header: "Upload timestamp",
+		header: ({ column }) => (
+			<div
+				onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+				className="pl-0 flex align-middle "
+			>
+				Upload time
+				<ArrowUpDown className="ml-2 h-4 w-4 self-center cursor-pointer" />
+			</div>
+		),
 	},
 	{
 		accessorKey: "downloadUrl",
 		header: " Download",
+		cell: ({ row }) => (
+			<a href={row.original.downloadUrl} className="flex justify-center">
+				<Download size={16} />
+			</a>
+		),
 	},
 ];
 
