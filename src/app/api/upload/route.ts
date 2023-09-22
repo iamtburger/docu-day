@@ -5,7 +5,7 @@ import {
 	PutObjectCommandOutput,
 } from "@aws-sdk/client-s3";
 import { NextRequest } from "next/server";
-import { s3 } from "@/app/s3Client/s3Client";
+import { s3 } from "@/s3Client/s3Client";
 
 const uploadFiles = async (
 	fileName: string,

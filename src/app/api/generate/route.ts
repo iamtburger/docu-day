@@ -6,7 +6,7 @@ import {
 	GetObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { s3 } from "@/app/s3Client/s3Client";
+import { s3 } from "@/s3Client/s3Client";
 
 export async function POST(req: NextRequest) {
 	const body = await req.json();

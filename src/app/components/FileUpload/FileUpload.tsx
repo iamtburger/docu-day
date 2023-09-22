@@ -1,20 +1,18 @@
 "use client";
 
 import { Dispatch, SetStateAction, useState } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
-	Typography,
-	Button,
-	Box,
 	Dialog,
-	DialogTitle,
 	DialogContent,
-	TextField,
-	CircularProgress,
-} from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import ClearIcon from "@mui/icons-material/Clear";
-import ErrorIcon from "@mui/icons-material/Error";
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
+import { CheckCircle, Loader2, Pencil, X, XCircle } from "lucide-react";
 
 import "./FileUpload.css";
 
@@ -65,16 +63,28 @@ const FileUpload = () => {
 		setSelectedFiles(validFiles);
 	};
 
-	const removeFileFromSelection = (fileName: string) => {};
+	const removeFileFromSelection = (fileName: string) => {
+		setSelectedFiles((prevState) => {
+			const fileToRemoveIndex = prevState.findIndex(
+				(file) => file.key === fileName
+			);
+			const updatedFilesList = [...prevState];
+			updatedFilesList.splice(fileToRemoveIndex, 1);
+			return updatedFilesList;
+		});
+	};
 
 	const areFilesSelected = Object.keys(selectedFiles).length > 0;
 
 	return (
-		<Dialog open={true} fullWidth maxWidth="sm">
-			<DialogTitle align="center">File upload</DialogTitle>
+		<Dialog>
+			<DialogTrigger>Upload Files</DialogTrigger>
 			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>File upload</DialogTitle>
+				</DialogHeader>
 				{areFilesSelected ? (
-					<Box m={4}>
+					<div className="mt-4">
 						{selectedFiles.map((selectedFile) => {
 							return (
 								<SelectedFileRow
@@ -94,24 +104,23 @@ const FileUpload = () => {
 								/>
 							);
 						})}
-					</Box>
+					</div>
 				) : (
-					<Typography align="center" m={4}>
-						No files selected
-					</Typography>
+					<p className="m-4 text-center">No files selected</p>
 				)}
-				<Box display="flex" justifyContent="space-between">
-					<label htmlFor="contained-button-file">
-						<input
-							id="contained-button-file"
-							type="file"
-							onChange={(e) => selectFiles(e.currentTarget.files)}
-							multiple
-							hidden
-						/>
-						<Button variant="contained" component="span">
-							Browse...
-						</Button>
+				<div className="flex justify-between">
+					<input
+						id="contained-button-file"
+						type="file"
+						onChange={(e) => selectFiles(e.currentTarget.files)}
+						multiple
+						hidden
+					/>
+					<label
+						htmlFor="contained-button-file"
+						className="h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer"
+					>
+						Browse...
 					</label>
 					{areFilesSelected && (
 						<Button
@@ -175,7 +184,7 @@ const FileUpload = () => {
 							Upload
 						</Button>
 					)}
-				</Box>
+				</div>
 			</DialogContent>
 		</Dialog>
 	);
@@ -216,34 +225,43 @@ const SelectedFileRow = ({
 			onMouseOut={() => setShowEditIcon(false)}
 		>
 			<div
-				style={{ display: "flex", height: "32px", fontFamily: "inherit" }}
+				style={{
+					height: "32px",
+					fontFamily: "inherit",
+				}}
+				className="flex w-2/3"
 				onBlur={() => {
 					editFileName(updatedFileName);
 					setIsFileNameEditable(false);
 				}}
 			>
 				{isFileNameEditable ? (
-					<TextField
-						variant="standard"
+					<Input
 						value={updatedFileName}
 						onChange={(e) => setUpdatedFileName(e.target.value)}
 						autoFocus
 					/>
 				) : (
-					<div>{updatedFileName}</div>
+					<div className="self-center truncate">{updatedFileName}</div>
 				)}
-				{showEditIcon && (
-					<EditIcon
+				{showEditIcon && !isFileNameEditable && (
+					<Pencil
 						onClick={() => setIsFileNameEditable((prevState) => !prevState)}
+						className="ml-2 self-center"
+						size="18"
 					/>
 				)}
 			</div>
-			{status === FileUploadStatus.NOT_STARTED && (
-				<ClearIcon onClick={removeFileFromSelection} />
-			)}
-			{status === FileUploadStatus.PENDING && <CircularProgress size={30} />}
-			{status === FileUploadStatus.SUCCESS && <CheckCircleIcon />}
-			{status === FileUploadStatus.ERROR && <ErrorIcon />}
+			<div className="self-center">
+				{status === FileUploadStatus.NOT_STARTED && (
+					<X onClick={removeFileFromSelection} size={16} />
+				)}
+				{status === FileUploadStatus.PENDING && (
+					<Loader2 className="animate-spin" />
+				)}
+				{status === FileUploadStatus.SUCCESS && <CheckCircle />}
+				{status === FileUploadStatus.ERROR && <XCircle />}
+			</div>
 		</div>
 	);
 };
