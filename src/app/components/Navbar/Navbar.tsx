@@ -29,19 +29,19 @@ function Navbar() {
 						<a href="http://localhost:3000/api/auth/login">Login</a>
 					</Button>
 				)}
-				<button
+				{/* <button
 					onClick={() => {
 						fetch("http://localhost:3000/api/user", {
 							method: "POST",
 							body: JSON.stringify({
-								id: user?.sid || "sid",
+								id: user?.sub || "sid",
 								username: user?.name || "user",
 							}),
 						});
 					}}
 				>
 					Create User
-				</button>
+				</button> */}
 			</div>
 		</nav>
 	);

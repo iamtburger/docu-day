@@ -12,9 +12,19 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import { CheckCircle, Loader2, Pencil, X, XCircle } from "lucide-react";
+import {
+	CheckCircle,
+	Loader2,
+	Pencil,
+	X,
+	XCircle,
+	PlusCircle,
+	Upload,
+} from "lucide-react";
 
 import "./FileUpload.css";
+import prisma from "@/prisma/prisma";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 enum FileUploadStatus {
 	"NOT_STARTED" = "NOT_STARTED",
@@ -32,14 +42,12 @@ interface FileWithStatus {
 	fileUploadUrl?: any;
 }
 
-// interface SelectedFiles {
-// 	[key: string]: FileWithStatus;
-// }
-
 type SelectedFiles = FileWithStatus[];
 
 const FileUpload = () => {
 	const [selectedFiles, setSelectedFiles] = useState<FileWithStatus[]>([]);
+
+	const { user } = useUser();
 
 	const selectFiles = (files: FileList | null) => {
 		let validFiles: FileWithStatus[] = [];
@@ -74,12 +82,21 @@ const FileUpload = () => {
 		});
 	};
 
-	const areFilesSelected = Object.keys(selectedFiles).length > 0;
+	const areFilesSelected = selectedFiles.length > 0;
 
 	return (
-		<Dialog>
+		<Dialog
+			onOpenChange={(isOpen) => {
+				if (!isOpen) {
+					console.log("refetching table data");
+				}
+			}}
+		>
 			<DialogTrigger asChild>
-				<Button className="ml-2">Upload Documents</Button>
+				<Button className="ml-2">
+					<Upload size={18} className="mr-2" />
+					Upload
+				</Button>
 			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
@@ -170,6 +187,20 @@ const FileUpload = () => {
 												throw new Error(
 													"Something went wrong while uploading the file. Please try again later!"
 												);
+											}
+										})
+										.then(() => {
+											if (
+												selectedFile.fileName !== undefined &&
+												user?.sub !== undefined &&
+												user.sub !== null
+											) {
+												prisma.document.create({
+													data: {
+														name: selectedFile.fileName,
+														user_id: user.sub,
+													},
+												});
 											}
 										})
 										.catch((e) => {

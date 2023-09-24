@@ -7,6 +7,7 @@ import {
 	getFilteredRowModel,
 	SortingState,
 	getSortedRowModel,
+	RowSelectionState,
 } from "@tanstack/react-table";
 
 import {
@@ -18,19 +19,25 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import FileUpload from "@/app/components/FileUpload/FileUpload";
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
-	data: TData[];
+	// data: TData[];
+	// rowSelection: RowSelectionState;
+	// setRowSelection: Dispatch<SetStateAction<{}>>;
 }
 
 export function DocumentsSelectorTable<TData, TValue>({
 	columns,
-	data,
-}: DataTableProps<TData, TValue>) {
+}: //data,
+// rowSelection,
+// setRowSelection,
+DataTableProps<TData, TValue>) {
+	const [data, setData] = useState<TData[]>([]);
+
 	const [rowSelection, setRowSelection] = useState({});
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [sorting, setSorting] = useState<SortingState>([]);
@@ -50,6 +57,18 @@ export function DocumentsSelectorTable<TData, TValue>({
 		},
 	});
 
+	const fetchDocuments = async () => {
+		const res = await fetch("http://localhost:3000/api/documents", {
+			method: "GET",
+		});
+		const documents = await res.json();
+		setData(documents);
+	};
+
+	useEffect(() => {
+		fetchDocuments();
+	}, []);
+
 	return (
 		<div>
 			<div className="flex">
@@ -61,6 +80,7 @@ export function DocumentsSelectorTable<TData, TValue>({
 					}
 					className="max-w-[40%] mb-2"
 				/>
+				{/* TODO: fetch data onClose */}
 				<FileUpload />
 			</div>
 			<div className="rounded-md border">

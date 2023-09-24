@@ -22,13 +22,27 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Download, ArrowUpDown, MoreHorizontal } from "lucide-react";
 
+interface Document {
+	id: number;
+	name: string;
+	createdAt: Date;
+	userId: string;
+}
+
 const formSchema = z.object({
 	username: z.string().min(2).max(40),
 	name: z.string().min(3).max(100),
 	description: z.string().max(500).optional(),
 	eventDate: z.date(),
 	uploadDate: z.date(),
-	files: z.array(z.string()),
+	documents: z.array(
+		z.object({
+			id: z.number(),
+			name: z.string(),
+			createdAt: z.date(),
+			userId: z.string(),
+		})
+	),
 	category: z.string(),
 });
 
@@ -43,7 +57,7 @@ function CreateEvent() {
 			description: "",
 			eventDate: new Date(),
 			uploadDate: new Date(),
-			files: [],
+			documents: [],
 			category: "",
 		},
 	});
@@ -103,6 +117,21 @@ function CreateEvent() {
 						)}
 					/>
 					<DatePickerFormInput control={form.control} />
+					<FormField
+						control={form.control}
+						name="documents"
+						render={({ field }) => (
+							<FormItem>
+								<DocumentsSelectorTable
+									columns={getColumnDefinitions(
+										(value) => field.onChange(value),
+										field.value
+									)}
+									// data={documents}
+								/>
+							</FormItem>
+						)}
+					/>
 				</Form>
 				<Button
 					onClick={async () => {
@@ -110,15 +139,14 @@ function CreateEvent() {
 							method: "POST",
 							body: JSON.stringify(form.getValues()),
 						});
+						console.log(form.getValues());
 					}}
 					className=""
 				>
 					Save
 				</Button>
 			</div>
-			<div className="col-span-3 container mx-auto py-10">
-				<DocumentsSelectorTable columns={columnDefinitions} data={documents} />
-			</div>
+			<div className="col-span-3 container mx-auto py-10"></div>
 		</div>
 	);
 }
@@ -156,15 +184,25 @@ type EventDocument = {
 	downloadUrl?: string;
 };
 
-const columnDefinitions: ColumnDef<EventDocument>[] = [
+const getColumnDefinitions = (
+	onRowSelectionChange: (value: any) => void,
+	previousValue: any
+): ColumnDef<EventDocument>[] => [
 	{
 		id: "select",
 		header: ({ table }) => (
 			<Checkbox
 				checked={table.getIsAllPageRowsSelected()}
-				onCheckedChange={(value) =>
-					table.toggleAllPageRowsSelected(Boolean(value))
-				}
+				onCheckedChange={(value) => {
+					if (value) {
+						onRowSelectionChange(
+							table.getRowModel().rows.map((row) => row.original)
+						);
+					} else {
+						onRowSelectionChange([]);
+					}
+					table.toggleAllPageRowsSelected(Boolean(value));
+				}}
 				aria-label="Select all"
 				className="mt-1"
 			/>
@@ -172,7 +210,18 @@ const columnDefinitions: ColumnDef<EventDocument>[] = [
 		cell: ({ row }) => (
 			<Checkbox
 				checked={row.getIsSelected()}
-				onCheckedChange={(value) => row.toggleSelected(Boolean(value))}
+				onCheckedChange={(value) => {
+					if (value) {
+						onRowSelectionChange([...previousValue, row.original]);
+					} else {
+						onRowSelectionChange([
+							...previousValue.filter(
+								(rowValue: any) => rowValue.id !== row.original.id
+							),
+						]);
+					}
+					row.toggleSelected(Boolean(value));
+				}}
 				aria-label="Select row"
 				className="mt-1"
 			/>
@@ -196,13 +245,18 @@ const columnDefinitions: ColumnDef<EventDocument>[] = [
 		accessorKey: "createdAt",
 		header: ({ column }) => (
 			<div
-				onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-				className="pl-0 flex align-middle "
+				onClick={() => column.toggleSorting(column.getIsSorted() === "desc")}
+				className="pl-0 flex align-middle justify-end"
 			>
 				Upload time
 				<ArrowUpDown className="ml-2 h-4 w-4 self-center cursor-pointer" />
 			</div>
 		),
+		cell: ({ row }) => {
+			const formattedCell = "12/10/2023";
+
+			return <div className="text-right">{formattedCell}</div>;
+		},
 	},
 	{
 		accessorKey: "downloadUrl",
