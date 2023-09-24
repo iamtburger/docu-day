@@ -14,7 +14,7 @@ model User {
   id  String @id
   username String
   created_at DateTime @default(now())
-  document Document?
+  document Document[]
   categories UserCategories[]
   event Event[]
 }
@@ -24,7 +24,7 @@ model Document {
   name String
   created_at DateTime @default(now())
   user User @relation(fields: [user_id], references: [id])
-  user_id String @unique
+  user_id String
   events EventDocuments[]
 }
 

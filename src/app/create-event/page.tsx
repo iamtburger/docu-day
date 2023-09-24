@@ -2,18 +2,18 @@
 
 import { CategoryInput } from "@/components/FormInputs/CategoryInput";
 import { DatePickerFormInput } from "@/components/FormInputs/DatePicker";
-import { DocumentsSelectorTable } from "@/components/FormInputs/FileSelector";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { DocumentsSelectorTable } from "@/components/FormInputs/DocumentSelector";
+import { Button } from "@/components/ShadcnUi/button";
+import { Checkbox } from "@/components/ShadcnUi/checkbox";
 import {
 	Form,
 	FormControl,
 	FormField,
 	FormItem,
 	FormLabel,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+} from "@/components/ShadcnUi/form";
+import { Input } from "@/components/ShadcnUi/input";
+import { Textarea } from "@/components/ShadcnUi/textarea";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ColumnDef } from "@tanstack/react-table";

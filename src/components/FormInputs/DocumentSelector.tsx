@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
 	ColumnDef,
 	useReactTable,
@@ -7,9 +8,7 @@ import {
 	getFilteredRowModel,
 	SortingState,
 	getSortedRowModel,
-	RowSelectionState,
 } from "@tanstack/react-table";
-
 import {
 	Table,
 	TableBody,
@@ -17,25 +16,17 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Input } from "../ui/input";
-import FileUpload from "@/app/components/FileUpload/FileUpload";
+	Input,
+	FileUpload,
+} from "@/components";
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
-	// data: TData[];
-	// rowSelection: RowSelectionState;
-	// setRowSelection: Dispatch<SetStateAction<{}>>;
 }
 
 export function DocumentsSelectorTable<TData, TValue>({
 	columns,
-}: //data,
-// rowSelection,
-// setRowSelection,
-DataTableProps<TData, TValue>) {
+}: DataTableProps<TData, TValue>) {
 	const [data, setData] = useState<TData[]>([]);
 
 	const [rowSelection, setRowSelection] = useState({});
@@ -66,7 +57,7 @@ DataTableProps<TData, TValue>) {
 	};
 
 	useEffect(() => {
-		fetchDocuments();
+		// fetchDocuments();
 	}, []);
 
 	return (

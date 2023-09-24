@@ -1,7 +1,7 @@
-import FileUpload from "./components/FileUpload/FileUpload";
+import FileUpload from "../components/FileUpload/FileUpload";
 import Link from "next/link";
 import Image from "next/image";
-import Navbar from "./components/Navbar/Navbar";
+import Navbar from "../components/Navbar/Navbar";
 import prisma from "@/prisma/prisma";
 
 export default function Home() {
