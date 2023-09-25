@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
 	ColumnDef,
 	useReactTable,
@@ -8,7 +8,10 @@ import {
 	getFilteredRowModel,
 	SortingState,
 	getSortedRowModel,
+	Table as TableType,
 } from "@tanstack/react-table";
+import { useUser } from "@auth0/nextjs-auth0/client";
+
 import {
 	Table,
 	TableBody,
@@ -19,6 +22,8 @@ import {
 	Input,
 	FileUpload,
 } from "@/components";
+import { fetchDocuments } from "@/requests";
+import { RequestState } from "@/data/enums";
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -28,6 +33,10 @@ export function DocumentsSelectorTable<TData, TValue>({
 	columns,
 }: DataTableProps<TData, TValue>) {
 	const [data, setData] = useState<TData[]>([]);
+	const [requestState, setRequestState] = useState<RequestState>(
+		RequestState.NOT_STARTED
+	);
+	const { user } = useUser();
 
 	const [rowSelection, setRowSelection] = useState({});
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -48,17 +57,22 @@ export function DocumentsSelectorTable<TData, TValue>({
 		},
 	});
 
-	const fetchDocuments = async () => {
-		const res = await fetch("http://localhost:3000/api/documents", {
-			method: "GET",
-		});
-		const documents = await res.json();
-		setData(documents);
-	};
+	const getDocuments = useCallback(async () => {
+		setRequestState(RequestState.PENDING);
+		try {
+			const res = await fetchDocuments();
+			const { documents } = await res.json();
+			setData(documents);
+			setRequestState(RequestState.SUCCESS);
+		} catch (e) {
+			console.error("Something went wrong while fetching Documents", e);
+			setRequestState(RequestState.ERROR);
+		}
+	}, []);
 
 	useEffect(() => {
-		// fetchDocuments();
-	}, []);
+		getDocuments();
+	}, [user, getDocuments]);
 
 	return (
 		<div>
@@ -71,8 +85,7 @@ export function DocumentsSelectorTable<TData, TValue>({
 					}
 					className="max-w-[40%] mb-2"
 				/>
-				{/* TODO: fetch data onClose */}
-				<FileUpload />
+				<FileUpload onClose={getDocuments} />
 			</div>
 			<div className="rounded-md border">
 				<Table>
@@ -93,6 +106,11 @@ export function DocumentsSelectorTable<TData, TValue>({
 						))}
 					</TableHeader>
 					<TableBody>
+						{/* {getTableContent(
+							requestState === RequestState.PENDING,
+							table,
+							columns.length
+						)} */}
 						{table.getRowModel().rows?.length ? (
 							table.getRowModel().rows.map((row) => (
 								<TableRow
@@ -125,4 +143,46 @@ export function DocumentsSelectorTable<TData, TValue>({
 			</div>
 		</div>
 	);
+}
+
+function getTableContent<TData>(
+	isLoading: boolean,
+	table: TableType<TData>,
+	colSpan: number
+) {
+	if (isLoading) {
+		return (
+			<TableRow>
+				<TableCell colSpan={colSpan} className="h-24 text-center">
+					Loading...
+				</TableCell>
+			</TableRow>
+		);
+	} else if (!isLoading && table.getRowModel().rows?.length) {
+		return (
+			<>
+				{table.getRowModel().rows.map((row) => (
+					<TableRow
+						key={row.id}
+						data-state={row.getIsSelected() && "selected"}
+						className="h-12"
+					>
+						{row.getVisibleCells().map((cell) => (
+							<TableCell key={cell.id} className="pt-1 pb-1">
+								{flexRender(cell.column.columnDef.cell, cell.getContext())}
+							</TableCell>
+						))}
+					</TableRow>
+				))}
+			</>
+		);
+	} else {
+		return (
+			<TableRow>
+				<TableCell colSpan={colSpan} className="h-24 text-center">
+					No results.
+				</TableCell>
+			</TableRow>
+		);
+	}
 }

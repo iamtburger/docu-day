@@ -1,4 +1,5 @@
 import FileUpload from "./FileUpload";
+import CreateCategory from "./CreateCategory";
 import {
 	DatePickerFormInput,
 	DocumentsSelectorTable,
@@ -100,4 +101,5 @@ export {
 	DatePickerFormInput,
 	DocumentsSelectorTable,
 	CategoryInput,
+	CreateCategory,
 };

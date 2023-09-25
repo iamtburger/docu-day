@@ -3,6 +3,8 @@
 import { Check, ChevronsUpDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { Control } from "react-hook-form";
+
 import {
 	Button,
 	Command,
@@ -11,7 +13,6 @@ import {
 	CommandInput,
 	CommandItem,
 	FormControl,
-	FormDescription,
 	FormField,
 	FormItem,
 	FormLabel,
@@ -20,12 +21,13 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components";
+import { DocumentSelectorFormSchema } from "@/data/types";
 
 export function CategoryInput({
 	control,
 	categories,
 }: {
-	control: any;
+	control: Control<DocumentSelectorFormSchema>;
 	categories: { label: string; value: string }[];
 }) {
 	return (
@@ -33,8 +35,8 @@ export function CategoryInput({
 			control={control}
 			name="category"
 			render={({ field }) => (
-				<FormItem className="flex flex-col">
-					<FormLabel>Language</FormLabel>
+				<FormItem className="flex flex-col pb-5">
+					<FormLabel>Category</FormLabel>
 					<Popover>
 						<PopoverTrigger asChild>
 							<FormControl>
@@ -50,7 +52,7 @@ export function CategoryInput({
 										? categories.find(
 												(language) => language.value === field.value
 										  )?.label
-										: "Select language"}
+										: "Select category"}
 									<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 								</Button>
 							</FormControl>
@@ -58,7 +60,7 @@ export function CategoryInput({
 						<PopoverContent className="w-[200px] p-0">
 							<Command>
 								<CommandInput placeholder="Search framework..." />
-								<CommandEmpty>No framework found.</CommandEmpty>
+								<CommandEmpty>No category found.</CommandEmpty>
 								<CommandGroup>
 									{categories.map((language) => (
 										<CommandItem
@@ -83,9 +85,6 @@ export function CategoryInput({
 							</Command>
 						</PopoverContent>
 					</Popover>
-					<FormDescription>
-						This is the language that will be used in the dashboard.
-					</FormDescription>
 					<FormMessage />
 				</FormItem>
 			)}

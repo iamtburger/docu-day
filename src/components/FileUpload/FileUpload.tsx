@@ -20,8 +20,8 @@ import { fileUploadLabels } from "@/data/labels";
 
 type SelectedFiles = FileWithStatus[];
 
-const FileUpload = () => {
-	const [selectedFiles, setSelectedFiles] = useState<FileWithStatus[]>([]);
+const FileUpload = ({ onClose }: { onClose: () => void }) => {
+	const [selectedFiles, setSelectedFiles] = useState<SelectedFiles>([]);
 	const { user } = useUser();
 
 	const selectFiles = useCallback(
@@ -81,7 +81,7 @@ const FileUpload = () => {
 		<Dialog
 			onOpenChange={(isOpen) => {
 				if (!isOpen) {
-					console.log("refetching table data");
+					onClose();
 					setSelectedFiles([]);
 				}
 			}}

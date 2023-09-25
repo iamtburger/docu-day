@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
 						assigned_at: new Date(),
 						document: {
 							connectOrCreate: {
-								where: { id: 234 },
+								where: { id: document.id },
 								create: {
 									name: document.name,
 									user_id: body.username,

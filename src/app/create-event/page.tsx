@@ -1,65 +1,32 @@
 "use client";
 
-import { CategoryInput } from "@/components/FormInputs/CategoryInput";
-import { DatePickerFormInput } from "@/components/FormInputs/DatePicker";
-import { DocumentsSelectorTable } from "@/components/FormInputs/DocumentSelector";
-import { Button } from "@/components/ShadcnUi/button";
-import { Checkbox } from "@/components/ShadcnUi/checkbox";
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-} from "@/components/ShadcnUi/form";
-import { Input } from "@/components/ShadcnUi/input";
-import { Textarea } from "@/components/ShadcnUi/textarea";
-import { useUser } from "@auth0/nextjs-auth0/client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ColumnDef } from "@tanstack/react-table";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useUser } from "@auth0/nextjs-auth0/client";
 import * as z from "zod";
-import { Download, ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-interface Document {
-	id: number;
-	name: string;
-	createdAt: Date;
-	userId: string;
-}
-
-const formSchema = z.object({
-	username: z.string().min(2).max(40),
-	name: z.string().min(3).max(100),
-	description: z.string().max(500).optional(),
-	eventDate: z.date(),
-	uploadDate: z.date(),
-	documents: z.array(
-		z.object({
-			id: z.number(),
-			name: z.string(),
-			createdAt: z.date(),
-			userId: z.string(),
-		})
-	),
-	category: z.string(),
-});
+import { CategoryInput } from "@/components/FormInputs/CategoryInput";
+import { DatePickerFormInput } from "@/components/FormInputs/DatePicker";
+import { Button } from "@/components/ShadcnUi/button";
+import { Form } from "@/components/ShadcnUi/form";
+import {
+	createEventFormDefaultValues,
+	createEventFormSchema,
+} from "@/data/formData";
+import {
+	DocumentSelectorFormInput,
+	EventDescriptionFormInput,
+	EventNameFormInput,
+} from "@/components/FormInputs";
+import { CreateCategory } from "@/components";
 
 function CreateEvent() {
 	const { user } = useUser();
 
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
-		defaultValues: {
-			username: user?.sub || "",
-			name: "",
-			description: "",
-			eventDate: new Date(),
-			uploadDate: new Date(),
-			documents: [],
-			category: "",
-		},
+	const form = useForm<z.infer<typeof createEventFormSchema>>({
+		resolver: zodResolver(createEventFormSchema),
+		defaultValues: createEventFormDefaultValues(user?.sub),
 	});
 
 	useEffect(() => {
@@ -68,85 +35,35 @@ function CreateEvent() {
 		}
 	}, [user, form]);
 
-	// TODO: fix padding on first div
 	return (
-		<div className="grid lg:grid-cols-6 md:grid-cols-3 sm:grid-cols-1 gap-3 lg:pl-24 md:pl-16 pl-8 lg:pr-24 md:pr-16 pr-8 pt-12">
-			<div className="col-span-3 p-10">
-				<Form {...form}>
-					<FormField
-						control={form.control}
-						name="name"
-						render={({ field }) => (
-							<FormItem className="mb-6 flex flex-col">
-								<FormLabel className="mt-1 mb-1">Event Name</FormLabel>
-								<FormControl>
-									<Input
-										className=""
-										required
-										{...field}
-										placeholder="Add a name for the event"
-									/>
-								</FormControl>
-							</FormItem>
-						)}
-					/>
-					<CategoryInput control={form.control} categories={languages} />
-					<FormField
-						control={form.control}
-						name="description"
-						render={({ field }) => (
-							<FormItem className="mb-6 flex flex-col">
-								<FormLabel className="mt-1 mb-1">Description</FormLabel>
-								<FormControl>
-									<div>
-										<Textarea
-											{...field}
-											onChange={(e) => {
-												if (e.target.value.length <= 500) {
-													field.onChange(e.target.value);
-												}
-											}}
-											placeholder="Add details to the event by describing it"
-										/>
-										<p className="text-right text-xs relative bottom-5 right-5 opacity-25 h-0">
-											{field.value?.length || 0} / 500
-										</p>
-									</div>
-								</FormControl>
-							</FormItem>
-						)}
-					/>
+		<div className="grid lg:grid-cols-6 md:grid-cols-3 sm:grid-cols-1 gap-3 lg:pl-12 md:pl-12 pl-8 lg:pr-12 md:pr-12 pr-8 pt-12">
+			<Form {...form}>
+				<div className="col-span-3 p-10">
+					<EventNameFormInput control={form.control} />
+					<div className="flex">
+						<CategoryInput control={form.control} categories={languages} />
+						<CreateCategory />
+					</div>
+					<EventDescriptionFormInput control={form.control} />
 					<DatePickerFormInput control={form.control} />
-					<FormField
-						control={form.control}
-						name="documents"
-						render={({ field }) => (
-							<FormItem>
-								<DocumentsSelectorTable
-									columns={getColumnDefinitions(
-										(value) => field.onChange(value),
-										field.value
-									)}
-									// data={documents}
-								/>
-							</FormItem>
-						)}
-					/>
-				</Form>
-				<Button
-					onClick={async () => {
-						fetch("http://localhost:3000/api/event", {
-							method: "POST",
-							body: JSON.stringify(form.getValues()),
-						});
-						console.log(form.getValues());
-					}}
-					className=""
-				>
-					Save
-				</Button>
-			</div>
-			<div className="col-span-3 container mx-auto py-10"></div>
+				</div>
+				<div className="col-span-3 container mx-auto lg:py-10">
+					<DocumentSelectorFormInput control={form.control} />
+				</div>
+				<div className="col-span-3 pl-10">
+					<Button
+						onClick={async () => {
+							fetch("http://localhost:3000/api/event", {
+								method: "POST",
+								body: JSON.stringify(form.getValues()),
+							});
+						}}
+						className="w-1/2"
+					>
+						Save
+					</Button>
+				</div>
+			</Form>
 		</div>
 	);
 }
@@ -161,112 +78,6 @@ const languages = [
 	{ label: "Japanese", value: "ja" },
 	{ label: "Korean", value: "ko" },
 	{ label: "Chinese", value: "zh" },
-];
-
-const documents = [
-	{
-		id: "asd35f446g4",
-		name: "some.txt",
-		createdAt: "",
-		downloadUrl: "http://localhost:3000/files/some.txt",
-	},
-	{
-		id: "grd35f446g4",
-		name: "other.txt",
-		createdAt: "",
-		downloadUrl: "http://localhost:3000/files/other.txt",
-	},
-];
-type EventDocument = {
-	id: string;
-	name: string;
-	createdAt: Date | string;
-	downloadUrl?: string;
-};
-
-const getColumnDefinitions = (
-	onRowSelectionChange: (value: any) => void,
-	previousValue: any
-): ColumnDef<EventDocument>[] => [
-	{
-		id: "select",
-		header: ({ table }) => (
-			<Checkbox
-				checked={table.getIsAllPageRowsSelected()}
-				onCheckedChange={(value) => {
-					if (value) {
-						onRowSelectionChange(
-							table.getRowModel().rows.map((row) => row.original)
-						);
-					} else {
-						onRowSelectionChange([]);
-					}
-					table.toggleAllPageRowsSelected(Boolean(value));
-				}}
-				aria-label="Select all"
-				className="mt-1"
-			/>
-		),
-		cell: ({ row }) => (
-			<Checkbox
-				checked={row.getIsSelected()}
-				onCheckedChange={(value) => {
-					if (value) {
-						onRowSelectionChange([...previousValue, row.original]);
-					} else {
-						onRowSelectionChange([
-							...previousValue.filter(
-								(rowValue: any) => rowValue.id !== row.original.id
-							),
-						]);
-					}
-					row.toggleSelected(Boolean(value));
-				}}
-				aria-label="Select row"
-				className="mt-1"
-			/>
-		),
-		enableSorting: false,
-		enableHiding: false,
-	},
-	{
-		accessorKey: "name",
-		header: ({ column }) => (
-			<div
-				onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-				className="pl-0 flex align-middle "
-			>
-				Name
-				<ArrowUpDown className="ml-2 h-4 w-4 self-center cursor-pointer" />
-			</div>
-		),
-	},
-	{
-		accessorKey: "createdAt",
-		header: ({ column }) => (
-			<div
-				onClick={() => column.toggleSorting(column.getIsSorted() === "desc")}
-				className="pl-0 flex align-middle justify-end"
-			>
-				Upload time
-				<ArrowUpDown className="ml-2 h-4 w-4 self-center cursor-pointer" />
-			</div>
-		),
-		cell: ({ row }) => {
-			const formattedCell = "12/10/2023";
-
-			return <div className="text-right">{formattedCell}</div>;
-		},
-	},
-	{
-		accessorKey: "downloadUrl",
-		header: " Download",
-		cell: ({ row }) => (
-			<a href={row.original.downloadUrl} className="flex justify-center">
-				<Download size={16} />
-			</a>
-		),
-	},
 ];
 
 export default CreateEvent;

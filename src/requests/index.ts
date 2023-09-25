@@ -1,3 +1,8 @@
-import { uploadFiles, createDocument, generateUploadUrls } from "./requests";
+import {
+	uploadFiles,
+	createDocument,
+	generateUploadUrls,
+	fetchDocuments,
+} from "./requests";
 
-export { uploadFiles, createDocument, generateUploadUrls };
+export { uploadFiles, createDocument, generateUploadUrls, fetchDocuments };
