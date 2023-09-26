@@ -4,7 +4,7 @@ import * as React from "react";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/utils";
 import { Button } from "@/components/ShadcnUi/button";
 import { Calendar } from "@/components/ShadcnUi/calendar";
 import {

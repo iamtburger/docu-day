@@ -17,7 +17,7 @@ export interface FileWithStatus {
 	fileUploadUrl?: string;
 }
 
-export type DocumentSelectorFormSchema = z.infer<typeof createEventFormSchema>;
+export type EventFormSchema = z.infer<typeof createEventFormSchema>;
 
 interface Document {
 	id: number;

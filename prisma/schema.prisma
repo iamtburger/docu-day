@@ -15,7 +15,7 @@ model User {
   username String
   created_at DateTime @default(now())
   document Document[]
-  categories UserCategories[]
+  categories Category[]
   event Event[]
 }
 
@@ -43,8 +43,8 @@ model Event {
 
 model Category {
   id Int @id @default(autoincrement())
-  name String
-  user UserCategories[]
+  name String @unique
+  user User[]
 }
 
 model EventDocuments {
@@ -57,12 +57,12 @@ model EventDocuments {
   @@id([event_id, document_id])
 }
 
-model UserCategories {
-  user User @relation(fields: [user_id], references: [id])
-  user_id String
-  category Category @relation(fields: [category_id], references: [id])
-  category_id Int
+// model UserCategories {
+//   user User @relation(fields: [user_id], references: [id])
+//   user_id String
+//   category Category @relation(fields: [category_id], references: [id])
+//   category_id Int
 
-  @@id([user_id, category_id])
-}
+//   @@id([user_id, category_id])
+// }
 

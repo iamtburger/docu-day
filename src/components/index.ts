@@ -1,10 +1,7 @@
 import FileUpload from "./FileUpload";
 import CreateCategory from "./CreateCategory";
-import {
-	DatePickerFormInput,
-	DocumentsSelectorTable,
-	CategoryInput,
-} from "./FormInputs";
+import DocumentsSelectorTable from "./DocumentSelectorTable";
+import { DatePickerFormInput, CategoryInput } from "./FormInputs";
 import {
 	Button,
 	buttonVariants,
@@ -99,7 +96,7 @@ export {
 	TableCaption,
 	Textarea,
 	DatePickerFormInput,
-	DocumentsSelectorTable,
 	CategoryInput,
 	CreateCategory,
+	DocumentsSelectorTable,
 };

@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { Checkbox, FormField, FormItem } from "../ShadcnUi";
 import { DocumentSelectorFormSchema } from "@/data/types";
-import { DocumentsSelectorTable } from "./DocumentSelector";
+import DocumentsSelectorTable from "../DocumentSelectorTable";
 
 const DocumentSelectorFormInput = ({
 	control,

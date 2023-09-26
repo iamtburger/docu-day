@@ -1,5 +1,5 @@
 import prisma from "@/prisma/prisma";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
 	const body = await req.json();
@@ -12,10 +12,9 @@ export async function POST(req: NextRequest) {
 				user_id: userId,
 			},
 		});
-		console.log(uploadedDocument);
-
-		return new Response(JSON.stringify("YEAH"));
+		return new NextResponse(JSON.stringify(uploadedDocument), { status: 201 });
 	} catch (e) {
 		console.error(e);
+		return new NextResponse(JSON.stringify("Error while uploading document!"));
 	}
 }

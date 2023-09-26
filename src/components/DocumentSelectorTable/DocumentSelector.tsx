@@ -29,7 +29,7 @@ interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
 }
 
-export function DocumentsSelectorTable<TData, TValue>({
+function DocumentsSelectorTable<TData, TValue>({
 	columns,
 }: DataTableProps<TData, TValue>) {
 	const [data, setData] = useState<TData[]>([]);
@@ -106,37 +106,10 @@ export function DocumentsSelectorTable<TData, TValue>({
 						))}
 					</TableHeader>
 					<TableBody>
-						{/* {getTableContent(
+						{getTableContent(
 							requestState === RequestState.PENDING,
 							table,
 							columns.length
-						)} */}
-						{table.getRowModel().rows?.length ? (
-							table.getRowModel().rows.map((row) => (
-								<TableRow
-									key={row.id}
-									data-state={row.getIsSelected() && "selected"}
-									className="h-12"
-								>
-									{row.getVisibleCells().map((cell) => (
-										<TableCell key={cell.id} className="pt-1 pb-1">
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext()
-											)}
-										</TableCell>
-									))}
-								</TableRow>
-							))
-						) : (
-							<TableRow>
-								<TableCell
-									colSpan={columns.length}
-									className="h-24 text-center"
-								>
-									No results.
-								</TableCell>
-							</TableRow>
 						)}
 					</TableBody>
 				</Table>
@@ -144,6 +117,8 @@ export function DocumentsSelectorTable<TData, TValue>({
 		</div>
 	);
 }
+
+export default DocumentsSelectorTable;
 
 function getTableContent<TData>(
 	isLoading: boolean,

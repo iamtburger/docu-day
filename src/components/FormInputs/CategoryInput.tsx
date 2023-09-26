@@ -1,10 +1,10 @@
 "use client";
 
+import { useCallback, useEffect, useState } from "react";
+import { Control } from "react-hook-form";
 import { Check, ChevronsUpDown } from "lucide-react";
 
-import { cn } from "@/lib/utils";
-import { Control } from "react-hook-form";
-
+import { cn } from "@/utils/utils";
 import {
 	Button,
 	Command,
@@ -21,15 +21,27 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components";
-import { DocumentSelectorFormSchema } from "@/data/types";
+import { EventFormSchema } from "@/data/types";
 
 export function CategoryInput({
 	control,
-	categories,
 }: {
-	control: Control<DocumentSelectorFormSchema>;
-	categories: { label: string; value: string }[];
+	control: Control<EventFormSchema>;
 }) {
+	const [categories, setCategories] = useState<{ id: string; name: string }[]>(
+		[]
+	);
+
+	const getCategories = useCallback(async () => {
+		const response = await fetch("http://localhost:3000/api/categories");
+		const fetchedCategories = await response.json();
+		setCategories(fetchedCategories);
+	}, [setCategories]);
+
+	useEffect(() => {
+		getCategories();
+	}, [getCategories]);
+
 	return (
 		<FormField
 			control={control}
@@ -49,9 +61,8 @@ export function CategoryInput({
 									)}
 								>
 									{field.value
-										? categories.find(
-												(language) => language.value === field.value
-										  )?.label
+										? categories.find((category) => category.id === field.value)
+												?.name
 										: "Select category"}
 									<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 								</Button>
@@ -62,23 +73,23 @@ export function CategoryInput({
 								<CommandInput placeholder="Search framework..." />
 								<CommandEmpty>No category found.</CommandEmpty>
 								<CommandGroup>
-									{categories.map((language) => (
+									{categories.map((category) => (
 										<CommandItem
-											value={language.label}
-											key={language.value}
+											value={category.id}
+											key={category.id}
 											onSelect={() => {
-												field.onChange(language.value);
+												field.onChange(category.id);
 											}}
 										>
 											<Check
 												className={cn(
 													"mr-2 h-4 w-4",
-													language.value === field.value
+													category.id === field.value
 														? "opacity-100"
 														: "opacity-0"
 												)}
 											/>
-											{language.label}
+											{category.name}
 										</CommandItem>
 									))}
 								</CommandGroup>

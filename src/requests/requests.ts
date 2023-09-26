@@ -28,9 +28,9 @@ export const fetchDocuments = () =>
 	fetch("http://localhost:3000/api/documents");
 
 // TODO: add support for creating multiple categories
-export const createCategory = (categories: string) => {
+export const createCategory = (category: string) => {
 	fetch("http://localhost:3000/api/categories", {
 		method: "POST",
-		body: JSON.stringify(categories),
+		body: JSON.stringify({ name: category }),
 	});
 };

@@ -1,56 +1,52 @@
+import { EventFormSchema } from "@/data/types";
 import prisma from "@/prisma/prisma";
-import { NextRequest } from "next/server";
+import { getSession } from "@auth0/nextjs-auth0";
+import { NextRequest, NextResponse } from "next/server";
+
+type EventFormBody = EventFormSchema & { createdAt: Date };
 
 export async function POST(req: NextRequest) {
-	const body = await req.json();
-	const { documents } = body;
+	const session = await getSession();
 
-	const newEvent = await prisma.event.create({
-		data: {
-			name: body.name,
-			description: body.description,
-			event_date: body.eventDate,
-			user_id: body.username,
-			created_at: body.createdAt,
-			// category_id: body.category,
-			category_id: 32,
-			documents: {
-				create: documents.map((document: any) => {
-					return {
-						assigned_at: new Date(),
-						document: {
-							connectOrCreate: {
-								where: { id: document.id },
-								create: {
-									name: document.name,
-									user_id: body.username,
+	if (!session?.user) {
+		return new NextResponse(JSON.stringify("User not authenticated!"), {
+			status: 401,
+		});
+	}
+
+	try {
+		const body: EventFormBody = await req.json();
+		const { documents, name, description, eventDate, createdAt } = body;
+
+		const newEvent = await prisma.event.create({
+			data: {
+				name: name,
+				description: description,
+				event_date: eventDate,
+				user_id: session.user.sub,
+				created_at: createdAt,
+				category_id: Number(body.category),
+				documents: {
+					create: documents.map((document: any) => {
+						return {
+							assigned_at: new Date(),
+							document: {
+								connectOrCreate: {
+									where: { id: document.id },
+									create: {
+										name: document.name,
+										user_id: session.user.sub,
+									},
 								},
 							},
-						},
-					};
-				}),
+						};
+					}),
+				},
 			},
-			// documents: {
-			// 	create: [
-			// 		{
-			// 			// other EventDocuments fields...
-			// 			assigned_at: new Date(),
-			// 			document: {
-			// 				connectOrCreate: {
-			// 					where: { id: 12 }, // replace with your Document id
-			// 					create: {
-			// 						name: "Document Name",
-			// 						user_id: body.username,
-			// 					},
-			// 				},
-			// 			},
-			// 		},
-			// 	],
-			// },
-		},
-	});
-
-	console.log(newEvent);
-
-	return new Response(JSON.stringify("YEAH"));
+		});
+		return new NextResponse(JSON.stringify(newEvent));
+	} catch (e) {
+		console.error("Event creation error!", e);
+		return new NextResponse(JSON.stringify(e), { status: 500 });
+	}
 }

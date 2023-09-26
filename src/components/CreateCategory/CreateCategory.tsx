@@ -1,3 +1,5 @@
+"user client";
+
 import { useState } from "react";
 import { PlusCircle } from "lucide-react";
 
@@ -9,7 +11,7 @@ import {
 	Input,
 	DialogContent,
 } from "@/components";
-import { createCategory } from "@/requests/requests";
+import { createCategory } from "@/requests";
 
 const CreateCategory = () => {
 	const [category, setCategory] = useState("");
