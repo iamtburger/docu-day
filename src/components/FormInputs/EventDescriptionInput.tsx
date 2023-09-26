@@ -1,12 +1,12 @@
 import { Control } from "react-hook-form";
 
-import { DocumentSelectorFormSchema } from "@/data/types";
+import { EventFormSchema } from "@/data/types";
 import { FormField, FormItem, FormLabel, FormControl, Textarea } from "..";
 
 const EventDescriptionFormInput = ({
 	control,
 }: {
-	control: Control<DocumentSelectorFormSchema>;
+	control: Control<EventFormSchema>;
 }) => (
 	<FormField
 		control={control}

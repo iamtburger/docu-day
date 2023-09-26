@@ -3,13 +3,13 @@ import { ArrowUpDown, Download } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { Checkbox, FormField, FormItem } from "../ShadcnUi";
-import { DocumentSelectorFormSchema } from "@/data/types";
+import { EventFormSchema } from "@/data/types";
 import DocumentsSelectorTable from "../DocumentSelectorTable";
 
 const DocumentSelectorFormInput = ({
 	control,
 }: {
-	control: Control<DocumentSelectorFormSchema>;
+	control: Control<EventFormSchema>;
 }) => (
 	<FormField
 		control={control}
@@ -112,11 +112,12 @@ const getColumnDefinitions = (
 	},
 	{
 		accessorKey: "downloadUrl",
-		header: " Download",
+		header: "",
 		cell: ({ row }) => (
 			<a href={row.original.downloadUrl} className="flex justify-center">
 				<Download size={16} />
 			</a>
 		),
+		size: 10213,
 	},
 ];

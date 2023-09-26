@@ -1,6 +1,12 @@
 "use client";
 
-import { Dispatch, SetStateAction, useCallback, useState } from "react";
+import {
+	Dispatch,
+	SetStateAction,
+	useCallback,
+	useMemo,
+	useState,
+} from "react";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { CheckCircle, Loader2, Pencil, X, XCircle, Upload } from "lucide-react";
 
@@ -22,6 +28,7 @@ type SelectedFiles = FileWithStatus[];
 
 const FileUpload = ({ onClose }: { onClose: () => void }) => {
 	const [selectedFiles, setSelectedFiles] = useState<SelectedFiles>([]);
+	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const { user } = useUser();
 
 	const selectFiles = useCallback(
@@ -76,6 +83,21 @@ const FileUpload = ({ onClose }: { onClose: () => void }) => {
 	);
 
 	const areFilesSelected = selectedFiles.length > 0;
+	const showUploadButton = useMemo(
+		() =>
+			selectedFiles.every((file) => file.status === RequestState.NOT_STARTED),
+		[selectedFiles]
+	);
+	const showCloseButton = useMemo(
+		() =>
+			areFilesSelected &&
+			selectedFiles.every(
+				(file) =>
+					file.status === RequestState.ERROR ||
+					file.status === RequestState.SUCCESS
+			),
+		[selectedFiles, areFilesSelected]
+	);
 
 	return (
 		<Dialog
@@ -84,10 +106,12 @@ const FileUpload = ({ onClose }: { onClose: () => void }) => {
 					onClose();
 					setSelectedFiles([]);
 				}
+				setIsDialogOpen(isOpen);
 			}}
+			open={isDialogOpen}
 		>
 			<DialogTrigger asChild>
-				<Button className="ml-2">
+				<Button className="ml-2" onClick={() => setIsDialogOpen(true)}>
 					<Upload size={18} className="mr-2" />
 					{fileUploadLabels.upload}
 				</Button>
@@ -116,21 +140,29 @@ const FileUpload = ({ onClose }: { onClose: () => void }) => {
 				) : (
 					<p className="m-4 text-center">{fileUploadLabels.noFilesSelected}</p>
 				)}
-				<div className="flex justify-between">
-					<input
-						id="contained-button-file"
-						type="file"
-						onChange={(e) => selectFiles(e.currentTarget.files)}
-						multiple
-						hidden
-					/>
-					<label
-						htmlFor="contained-button-file"
-						className="h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer"
-					>
-						{fileUploadLabels.browse}
-					</label>
-					{areFilesSelected && (
+				<div
+					className={`flex ${
+						showUploadButton ? "justify-between" : "justify-end"
+					} `}
+				>
+					{showUploadButton && (
+						<>
+							<input
+								id="contained-button-file"
+								type="file"
+								onChange={(e) => selectFiles(e.currentTarget.files)}
+								multiple
+								hidden
+							/>
+							<label
+								htmlFor="contained-button-file"
+								className="h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer"
+							>
+								{fileUploadLabels.browse}
+							</label>
+						</>
+					)}
+					{areFilesSelected && !showCloseButton && (
 						<Button
 							onClick={async () => {
 								let params = selectedFiles.map(mapToGenerateUrlParams);
@@ -168,8 +200,20 @@ const FileUpload = ({ onClose }: { onClose: () => void }) => {
 										});
 								}
 							}}
+							disabled={!showCloseButton && !showUploadButton}
 						>
 							{fileUploadLabels.upload}
+						</Button>
+					)}
+					{showCloseButton && (
+						<Button
+							onClick={() => {
+								onClose();
+								setSelectedFiles([]);
+								setIsDialogOpen(false);
+							}}
+						>
+							Close
 						</Button>
 					)}
 				</div>
