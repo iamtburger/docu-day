@@ -40,6 +40,7 @@
 		"dayjs": "^1.11.10",
 		"eslint": "8.47.0",
 		"eslint-config-next": "13.4.13",
+		"file-saver": "^2.0.5",
 		"lucide-react": "0.263.1",
 		"next": "13.4.13",
 		"postcss": "8.4.27",
@@ -55,6 +56,8 @@
 		"zod": "^3.22.2"
 	},
 	"devDependencies": {
+		"@types/downloadjs": "^1.4.4",
+		"@types/file-saver": "^2.0.5",
 		"@types/uuid": "^9.0.2",
 		"prisma": "^5.3.1"
 	}

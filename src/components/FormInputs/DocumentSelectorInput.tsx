@@ -1,6 +1,7 @@
 import { Control } from "react-hook-form";
 import { ArrowUpDown, Download } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
+import { saveAs } from "file-saver";
 
 import { Checkbox, FormField, FormItem } from "../ShadcnUi";
 import { EventFormSchema } from "@/data/types";
@@ -114,9 +115,24 @@ const getColumnDefinitions = (
 		accessorKey: "downloadUrl",
 		header: "",
 		cell: ({ row }) => (
-			<a href={row.original.downloadUrl} className="flex justify-center">
-				<Download size={16} />
-			</a>
+			<div className="flex justify-center cursor-pointer">
+				<Download
+					size={16}
+					onClick={async () => {
+						if (row.original.downloadUrl !== undefined) {
+							const res = await fetch(row.original.downloadUrl);
+							const { fileBody } = await res.json();
+							console.log(fileBody);
+							const link = document.createElement("a");
+							link.href = fileBody;
+							link.setAttribute("download", row.original.name);
+							link.setAttribute("target", "_blank");
+							link.click();
+							link.remove();
+						}
+					}}
+				/>
+			</div>
 		),
 		size: 10213,
 	},

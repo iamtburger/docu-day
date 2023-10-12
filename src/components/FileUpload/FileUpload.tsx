@@ -23,6 +23,7 @@ import { RequestState } from "@/data/enums";
 import { createDocument, generateUploadUrls, uploadFiles } from "@/requests";
 import { FileWithStatus } from "@/data/types";
 import { fileUploadLabels } from "@/data/labels";
+import UploadButton from "./UploadButton";
 
 type SelectedFiles = FileWithStatus[];
 
@@ -81,6 +82,43 @@ const FileUpload = ({ onClose }: { onClose: () => void }) => {
 		},
 		[selectedFiles, setSelectedFiles]
 	);
+
+	const onSubmit = useCallback(async () => {
+		let params = selectedFiles.map(mapToGenerateUrlParams);
+		const response = await generateUploadUrls(params);
+		const { urls } = await response.json();
+
+		for (let selectedFile of selectedFiles) {
+			const selectedFileUploadUrl = urls.find(
+				(url: { key: string }) => url.key === selectedFile.fileName
+			);
+			setPendingStatus(setSelectedFiles, selectedFile.key);
+
+			uploadFiles(selectedFileUploadUrl?.url, selectedFile.file)
+				.then((res) => {
+					if (Boolean(res.ok)) {
+						setSuccessStatus(setSelectedFiles, selectedFile.key);
+					} else {
+						throw new Error(
+							"Something went wrong while uploading the file. Please try again later!"
+						);
+					}
+				})
+				.then(() => {
+					if (
+						selectedFile.fileName !== undefined &&
+						user?.sub !== undefined &&
+						user.sub !== null
+					) {
+						createDocument(selectedFile.fileName, user.sub);
+					}
+				})
+				.catch((e) => {
+					setErrorStatus(setSelectedFiles, selectedFile.key);
+					console.error(e);
+				});
+		}
+	}, [selectedFiles, user?.sub]);
 
 	const areFilesSelected = selectedFiles.length > 0;
 	const showUploadButton = useMemo(
@@ -145,61 +183,10 @@ const FileUpload = ({ onClose }: { onClose: () => void }) => {
 						showUploadButton ? "justify-between" : "justify-end"
 					} `}
 				>
-					{showUploadButton && (
-						<>
-							<input
-								id="contained-button-file"
-								type="file"
-								onChange={(e) => selectFiles(e.currentTarget.files)}
-								multiple
-								hidden
-							/>
-							<label
-								htmlFor="contained-button-file"
-								className="h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer"
-							>
-								{fileUploadLabels.browse}
-							</label>
-						</>
-					)}
+					{showUploadButton && <UploadButton onChange={selectFiles} />}
 					{areFilesSelected && !showCloseButton && (
 						<Button
-							onClick={async () => {
-								let params = selectedFiles.map(mapToGenerateUrlParams);
-								const response = await generateUploadUrls(params);
-								const { urls } = await response.json();
-
-								for (let selectedFile of selectedFiles) {
-									const selectedFileUploadUrl = urls.find(
-										(url: { key: string }) => url.key === selectedFile.fileName
-									);
-									setPendingStatus(setSelectedFiles, selectedFile.key);
-
-									uploadFiles(selectedFileUploadUrl?.url, selectedFile.file)
-										.then((res) => {
-											if (Boolean(res.ok)) {
-												setSuccessStatus(setSelectedFiles, selectedFile.key);
-											} else {
-												throw new Error(
-													"Something went wrong while uploading the file. Please try again later!"
-												);
-											}
-										})
-										.then(() => {
-											if (
-												selectedFile.fileName !== undefined &&
-												user?.sub !== undefined &&
-												user.sub !== null
-											) {
-												createDocument(selectedFile.fileName, user.sub);
-											}
-										})
-										.catch((e) => {
-											setErrorStatus(setSelectedFiles, selectedFile.key);
-											console.error(e);
-										});
-								}
-							}}
+							onClick={onSubmit}
 							disabled={!showCloseButton && !showUploadButton}
 						>
 							{fileUploadLabels.upload}
@@ -231,8 +218,7 @@ const mapToGenerateUrlParams = (selectedFile: FileWithStatus) => ({
 export default FileUpload;
 
 //TODO:
-// Add more files button -> has to consider duplicate selections
-// Should not be able to add more files if upload is done
+// Prevent Save button from jumping when table data is being fetched.
 
 interface SelectedFileRowProps {
 	selectedFile: FileWithStatus;
