@@ -1,8 +1,10 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { s3 } from "@/s3Client/s3Client";
 import { getSession } from "@auth0/nextjs-auth0";
+
+import { s3 } from "@/s3Client/s3Client";
+import { getFolderName } from "@/utils/utils";
 
 export async function POST(req: NextRequest) {
 	const body = await req.json();
@@ -15,9 +17,13 @@ export async function POST(req: NextRequest) {
 				if (!isUserAvailable) {
 					throw new Error("User not available");
 				} else {
+					const folder = getFolderName(session.user.sub);
 					const url = await getSignedUrl(
 						s3,
-						new PutObjectCommand({ Bucket: session?.user.sub, Key: param.key }),
+						new PutObjectCommand({
+							Bucket: "docs",
+							Key: `${folder}/${param.key}`,
+						}),
 						{ expiresIn: 5500 }
 					);
 					return {
@@ -27,15 +33,15 @@ export async function POST(req: NextRequest) {
 				}
 			} catch (e) {
 				return {
-					// do something with this case
 					key: param.key,
-					message: `Failed to generate upload url for ${param.key} in ${param.bucketName}`,
+					error: e,
+					message: `Failed to generate upload url for ${param.key}`,
 				};
 			}
 		})
 	);
 
-	return new Response(JSON.stringify({ urls }), {
+	return new NextResponse(JSON.stringify({ urls }), {
 		status: 200,
 	});
 }

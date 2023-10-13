@@ -1,7 +1,7 @@
-import { GenerateUrlBody } from "@/data/types";
+import { EventFormSchema, GenerateUrlBody } from "@/data/types";
 
 export const generateUploadUrls = (params: GenerateUrlBody) =>
-	fetch("http://localhost:3000/api/upload", {
+	fetch("http://localhost:3000/api/generate", {
 		method: "POST",
 		body: JSON.stringify({ params }),
 	});
@@ -34,3 +34,12 @@ export const createCategory = (category: string) => {
 		body: JSON.stringify({ name: category }),
 	});
 };
+
+export const fetchDocumentDownloadUrl = (fileName: string) =>
+	fetch(`http://localhost:3000/api/document?file=${fileName}`);
+
+export const createEvent = (formData: EventFormSchema) =>
+	fetch("http://localhost:3000/api/event", {
+		method: "POST",
+		body: JSON.stringify(formData),
+	});

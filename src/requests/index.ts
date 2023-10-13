@@ -4,6 +4,8 @@ import {
 	generateUploadUrls,
 	fetchDocuments,
 	createCategory,
+	fetchDocumentDownloadUrl,
+	createEvent,
 } from "./requests";
 
 export {
@@ -12,4 +14,6 @@ export {
 	generateUploadUrls,
 	fetchDocuments,
 	createCategory,
+	fetchDocumentDownloadUrl,
+	createEvent,
 };

@@ -20,6 +20,7 @@ import {
 } from "@/components/FormInputs";
 import { CreateCategory } from "@/components";
 import { redirect } from "next/navigation";
+import { createEvent } from "@/requests";
 
 function CreateEvent() {
 	const { user, isLoading, error } = useUser();
@@ -53,10 +54,7 @@ function CreateEvent() {
 				<div className="col-span-3 pl-10 sm:mt-4 sm:mb-4">
 					<Button
 						onClick={async () => {
-							fetch("http://localhost:3000/api/event", {
-								method: "POST",
-								body: JSON.stringify(form.getValues()),
-							});
+							createEvent(form.getValues());
 						}}
 						className="w-1/2"
 					>

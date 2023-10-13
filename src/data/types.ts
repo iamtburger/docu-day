@@ -25,3 +25,10 @@ interface Document {
 	createdAt: Date;
 	userId: string;
 }
+
+export type EventDocument = {
+	id: string;
+	name: string;
+	createdAt: Date | string;
+	downloadUrl?: string;
+};

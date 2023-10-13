@@ -1,9 +1,11 @@
 import prisma from "@/prisma/prisma";
-import { s3 } from "@/s3Client/s3Client";
 import { getSession } from "@auth0/nextjs-auth0";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { NextRequest, NextResponse } from "next/server";
+
+import { s3 } from "@/s3Client/s3Client";
+import { getFolderName } from "@/utils/utils";
 
 export async function POST(req: NextRequest) {
 	const body = await req.json();
@@ -33,20 +35,16 @@ export async function GET(req: NextRequest) {
 	}
 
 	try {
-		const bucketName = session.user.sub.replace("|", "-");
+		const folderName = getFolderName(session.user.sub);
 		const fileName = req.nextUrl.searchParams.get("file");
 
-		if (bucketName && fileName) {
+		if (folderName && fileName) {
 			const dl = new GetObjectCommand({
 				Bucket: "docs",
-				Key: decodeURIComponent(fileName),
+				Key: `${folderName}/${decodeURIComponent(fileName)}`,
 			});
-			const fileBody = await getSignedUrl(s3, dl, { expiresIn: 25000 });
-			return new NextResponse(JSON.stringify({ fileBody }));
-			// const response = await s3.send(dl);
-			// console.log(response);
-			// const fileBody = await response.Body?.transformToString();
-			// return new NextResponse(JSON.stringify({ fileBody }));
+			const downloadUrl = await getSignedUrl(s3, dl, { expiresIn: 25000 });
+			return new NextResponse(JSON.stringify({ downloadUrl }));
 		}
 	} catch (e) {
 		return new NextResponse(JSON.stringify(e));

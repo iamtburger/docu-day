@@ -14,7 +14,6 @@ export async function GET() {
 		const mappedDocuments = documents.map((document) => ({
 			createdAt: document.created_at,
 			userId: document.user_id,
-			downloadUrl: `http://localhost:3000/api/document?file=${document.name}`,
 			...document,
 		}));
 
