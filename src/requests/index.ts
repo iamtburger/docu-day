@@ -6,6 +6,7 @@ import {
 	createCategory,
 	fetchDocumentDownloadUrl,
 	createEvent,
+	fetchCategories,
 } from "./requests";
 
 export {
@@ -16,4 +17,5 @@ export {
 	createCategory,
 	fetchDocumentDownloadUrl,
 	createEvent,
+	fetchCategories,
 };

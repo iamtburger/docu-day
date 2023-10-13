@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ShadcnUi/button";
+import { apiEndpoints } from "@/requests/urls";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import Link from "next/link";
 
@@ -17,13 +18,13 @@ function Navbar() {
 				</Link>
 				{Boolean(user) ? (
 					<Button>
-						<a href="http://localhost:3000/api/auth/logout" className="">
+						<a href={apiEndpoints.LOGOUT} className="">
 							Logout
 						</a>
 					</Button>
 				) : (
 					<Button>
-						<a href="http://localhost:3000/api/auth/login">Login</a>
+						<a href={apiEndpoints.LOGIN}>Login</a>
 					</Button>
 				)}
 			</div>

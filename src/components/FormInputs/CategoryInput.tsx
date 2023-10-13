@@ -22,6 +22,7 @@ import {
 	PopoverTrigger,
 } from "@/components";
 import { EventFormSchema } from "@/data/types";
+import { fetchCategories } from "@/requests";
 
 export function CategoryInput({
 	control,
@@ -33,7 +34,7 @@ export function CategoryInput({
 	);
 
 	const getCategories = useCallback(async () => {
-		const response = await fetch("http://localhost:3000/api/categories");
+		const response = await fetchCategories();
 		const fetchedCategories = await response.json();
 		setCategories(fetchedCategories);
 	}, [setCategories]);
