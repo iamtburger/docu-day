@@ -1,5 +1,5 @@
 import { Control } from "react-hook-form";
-import { FormControl, FormField, FormItem, FormLabel, Input } from "..";
+import { FormControl, FormField, FormItem, FormLabel, Input } from "../..";
 import { EventFormSchema } from "@/data/types";
 
 const EventNameFormInput = ({

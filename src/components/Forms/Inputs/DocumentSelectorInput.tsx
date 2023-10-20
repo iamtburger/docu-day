@@ -1,9 +1,9 @@
 import { Control } from "react-hook-form";
 
-import { FormField, FormItem } from "../ShadcnUi";
+import { FormField, FormItem } from "../../ShadcnUi";
 import { EventFormSchema } from "@/data/types";
-import DocumentsSelectorTable from "../DocumentSelectorTable";
-import { getDocumentSelectorTableDef } from "../DocumentSelectorTable/tableDefinitions";
+import DocumentsSelectorTable from "../../DocumentSelectorTable";
+import { getDocumentSelectorTableDef } from "../../DocumentSelectorTable/tableDefinitions";
 
 const DocumentSelectorFormInput = ({
 	control,

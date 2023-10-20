@@ -18,8 +18,13 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components";
+import { CreateEventFormControl } from "@/data/types";
 
-export function DatePickerFormInput({ control }: { control: any }) {
+export function DatePickerFormInput({
+	control,
+}: {
+	control: CreateEventFormControl;
+}) {
 	return (
 		<FormField
 			control={control}

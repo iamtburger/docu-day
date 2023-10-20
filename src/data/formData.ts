@@ -23,3 +23,21 @@ export const createEventFormDefaultValues = {
 	documents: [],
 	category: "",
 };
+
+export const searchEventsFormSchema = z.object({
+	searchTerm: z.string().optional(),
+	dateRange: z.object({
+		from: z.date().or(z.null()),
+		to: z.date().or(z.null()),
+	}),
+	category: z.string().optional(),
+});
+
+export const searchEventsDefaultValues = {
+	searchTerm: "",
+	dateRange: {
+		from: null,
+		to: null,
+	},
+	category: "",
+};

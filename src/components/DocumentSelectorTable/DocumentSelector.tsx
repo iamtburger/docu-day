@@ -87,7 +87,7 @@ function DocumentsSelectorTable<TData, TValue>({
 				/>
 				<FileUpload onClose={getDocuments} />
 			</div>
-			<div className="rounded-md border overflow-y-scroll max-h-[550px]">
+			<div className="rounded-md border overflow-y-scroll max-h-[60vh]">
 				<Table>
 					<TableHeader>
 						{table.getHeaderGroups().map((headerGroup) => (

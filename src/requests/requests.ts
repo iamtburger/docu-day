@@ -1,8 +1,8 @@
 import { EventFormSchema, GenerateUrlBody } from "@/data/types";
-import { apiEndpoints } from "./urls";
+import { ApiEndpoints } from "./urls";
 
 export const generateUploadUrls = (params: GenerateUrlBody) =>
-	fetch(apiEndpoints.GENERATE_URL, {
+	fetch(ApiEndpoints.GENERATE_URL, {
 		method: "POST",
 		body: JSON.stringify({ params }),
 	});
@@ -17,7 +17,7 @@ export const uploadFiles = (url: string, file: File) =>
 	});
 
 export const createDocument = (fileName: string, userId: string) =>
-	fetch(apiEndpoints.DOCUMENT, {
+	fetch(ApiEndpoints.DOCUMENT, {
 		method: "POST",
 		body: JSON.stringify({
 			name: fileName,
@@ -25,23 +25,23 @@ export const createDocument = (fileName: string, userId: string) =>
 		}),
 	});
 
-export const fetchDocuments = () => fetch(apiEndpoints.DOCUMENTS);
+export const fetchDocuments = () => fetch(ApiEndpoints.DOCUMENTS);
 
 // TODO: add support for creating multiple categories
 export const createCategory = (category: string) => {
-	fetch(apiEndpoints.CATEGORIES, {
+	fetch(ApiEndpoints.CATEGORIES, {
 		method: "POST",
 		body: JSON.stringify({ name: category }),
 	});
 };
 
 export const fetchDocumentDownloadUrl = (fileName: string) =>
-	fetch(`${apiEndpoints.DOCUMENT}?file=${fileName}`);
+	fetch(`${ApiEndpoints.DOCUMENT}?file=${fileName}`);
 
 export const createEvent = (formData: EventFormSchema) =>
-	fetch(apiEndpoints.EVENT, {
+	fetch(ApiEndpoints.EVENT, {
 		method: "POST",
 		body: JSON.stringify(formData),
 	});
 
-export const fetchCategories = () => fetch(apiEndpoints.CATEGORIES);
+export const fetchCategories = () => fetch(ApiEndpoints.CATEGORIES);

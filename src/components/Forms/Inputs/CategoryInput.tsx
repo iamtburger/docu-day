@@ -34,9 +34,13 @@ export function CategoryInput({
 	);
 
 	const getCategories = useCallback(async () => {
-		const response = await fetchCategories();
-		const fetchedCategories = await response.json();
-		setCategories(fetchedCategories);
+		try {
+			const response = await fetchCategories();
+			const fetchedCategories = await response.json();
+			setCategories(fetchedCategories);
+		} catch (e) {
+			console.error("Something went wrong, when fetching categories!", e);
+		}
 	}, [setCategories]);
 
 	useEffect(() => {
