@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import { z } from "zod";
 
 export const createEventFormSchema = z.object({
@@ -27,17 +28,19 @@ export const createEventFormDefaultValues = {
 export const searchEventsFormSchema = z.object({
 	searchTerm: z.string().optional(),
 	dateRange: z.object({
-		from: z.date().or(z.null()),
-		to: z.date().or(z.null()),
+		from: z.date(),
+		to: z.date().optional(),
 	}),
 	category: z.string().optional(),
 });
 
+const defaultDateRange = {
+	from: new Date(format(new Date(), "yyyy-MM-01")),
+	to: new Date(),
+};
+
 export const searchEventsDefaultValues = {
 	searchTerm: "",
-	dateRange: {
-		from: null,
-		to: null,
-	},
+	dateRange: defaultDateRange,
 	category: "",
 };

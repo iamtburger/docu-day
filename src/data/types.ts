@@ -2,6 +2,7 @@ import { z } from "zod";
 import { RequestState } from "./enums";
 import { createEventFormSchema, searchEventsFormSchema } from "./formData";
 import { Control } from "react-hook-form";
+import { DateRange } from "react-day-picker";
 
 export type GenerateUrlBody = {
 	bucketName: string;
@@ -20,6 +21,8 @@ export interface FileWithStatus {
 
 export type EventFormSchema = z.infer<typeof createEventFormSchema>;
 export type SearchEventFormSchema = z.infer<typeof searchEventsFormSchema>;
+export type CreateEventFormControl = Control<EventFormSchema>;
+export type SearchEventsFormControl = Control<SearchEventsFormType>;
 
 interface Document {
 	id: number;
@@ -46,12 +49,6 @@ export interface CreateEventForm {
 
 export interface SearchEventsFormType {
 	searchTerm?: string;
-	dateRange: {
-		from: Date | null;
-		to: Date | null;
-	};
+	dateRange: DateRange;
 	category?: string;
 }
-
-export type CreateEventFormControl = Control<EventFormSchema>;
-export type SearchEventsFormControl = Control<SearchEventsFormType>; // fix
