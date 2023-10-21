@@ -12,21 +12,29 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ShadcnUi/popover";
+import { useState } from "react";
+import { DayPickerBase } from "react-day-picker";
 
 // TODO: fix type
 export function DatePicker({
 	value,
 	onChange,
+	id,
+	disabled,
 }: {
-	value: Date;
+	value: Date | undefined;
 	onChange: (...event: any[]) => void;
+	id: string;
+	disabled?: any;
 }) {
-	const [date, setDate] = React.useState<Date>();
+	const [date, setDate] = useState<Date>();
+	const [calendarOpen, setCalendarOpen] = useState(false);
 
 	return (
-		<Popover>
+		<Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
 			<PopoverTrigger asChild>
 				<Button
+					id={id}
 					variant={"outline"}
 					className={cn(
 						"w-[280px] justify-start text-left font-normal",
@@ -41,8 +49,12 @@ export function DatePicker({
 				<Calendar
 					mode="single"
 					selected={value}
-					onSelect={onChange}
+					onSelect={(date) => {
+						onChange(date);
+						setCalendarOpen(false);
+					}}
 					initialFocus
+					disabled={disabled}
 				/>
 			</PopoverContent>
 		</Popover>

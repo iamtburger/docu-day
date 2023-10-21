@@ -2,6 +2,7 @@
 
 import { Input } from "@/components";
 import DateRangeSelector from "@/components/DateRangeSelector";
+import DateRange2 from "@/components/DateRangeSelector/DateRange";
 import { Card, CardContent, CardHeader } from "@/components/ShadcnUi/card";
 import { searchEventsFormSchema } from "@/data/formData";
 import {
@@ -33,10 +34,11 @@ const SearchEventsForm = ({
 				<p className="text-xs">Search by name or description</p>
 				<Input className="mb-2" placeholder="Robocop" />
 				<p className="text-xs">Event date range</p>
-				<DateRangeSelector
+				{/* <DateRangeSelector
 					className="mb-2"
 					control={form.control as SearchEventsFormControl}
-				/>
+				/> */}
+				<DateRange2 />
 				<p className="text-xs">Category</p>
 			</CardContent>
 		</Card>
