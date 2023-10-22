@@ -15,17 +15,18 @@ import {
 import { useState } from "react";
 import { DayPickerBase } from "react-day-picker";
 
-// TODO: fix type
 export function DatePicker({
 	value,
 	onChange,
 	id,
 	disabled,
+	label = "Pick a date",
 }: {
 	value: Date | undefined;
 	onChange: (...event: any[]) => void;
 	id: string;
-	disabled?: any;
+	disabled?: (date: Date) => boolean;
+	label?: string;
 }) {
 	const [date, setDate] = useState<Date>();
 	const [calendarOpen, setCalendarOpen] = useState(false);
@@ -41,7 +42,7 @@ export function DatePicker({
 						!value && "text-muted-foreground"
 					)}
 				>
-					{value ? format(value, "PPP") : <span>Pick a date</span>}
+					{value ? format(value, "PPP") : <span>{label}</span>}
 					<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
 				</Button>
 			</PopoverTrigger>

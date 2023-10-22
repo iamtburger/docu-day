@@ -22,7 +22,7 @@ export interface FileWithStatus {
 export type EventFormSchema = z.infer<typeof createEventFormSchema>;
 export type SearchEventFormSchema = z.infer<typeof searchEventsFormSchema>;
 export type CreateEventFormControl = Control<EventFormSchema>;
-export type SearchEventsFormControl = Control<SearchEventsFormType>;
+export type SearchEventsFormControl = Control<SearchEventFormSchema>;
 
 interface Document {
 	id: number;

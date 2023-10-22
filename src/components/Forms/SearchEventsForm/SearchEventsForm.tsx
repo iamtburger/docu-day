@@ -1,20 +1,14 @@
 "use client";
 
-import { Input } from "@/components";
-import DateRangeSelector from "@/components/DateRangeSelector";
-import DateRange2 from "@/components/DateRangeSelector/DateRange";
+import { Form, Input } from "@/components";
+import DateRangeSelector from "@/components/Forms/Inputs/DateRange";
 import { Card, CardContent, CardHeader } from "@/components/ShadcnUi/card";
 import { searchEventsFormSchema } from "@/data/formData";
-import {
-	SearchEventFormSchema,
-	SearchEventsFormControl,
-	SearchEventsFormType,
-} from "@/data/types";
+import { SearchEventFormSchema, SearchEventsFormType } from "@/data/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format, parse } from "date-fns";
 import { useForm } from "react-hook-form";
+import EventSearchInput from "../Inputs/EventSearchInput";
 
-// Default date range (current month)
 // No result -> No events found between XXXX - YYYY
 
 const SearchEventsForm = ({
@@ -29,18 +23,16 @@ const SearchEventsForm = ({
 
 	return (
 		<Card>
-			<CardHeader>Search events</CardHeader>
-			<CardContent>
-				<p className="text-xs">Search by name or description</p>
-				<Input className="mb-2" placeholder="Robocop" />
-				<p className="text-xs">Event date range</p>
-				{/* <DateRangeSelector
-					className="mb-2"
-					control={form.control as SearchEventsFormControl}
-				/> */}
-				<DateRange2 />
-				<p className="text-xs">Category</p>
-			</CardContent>
+			<Form {...form}>
+				<CardHeader>Search events</CardHeader>
+				<CardContent>
+					<div className="mb-2">
+						<EventSearchInput control={form.control} />
+					</div>
+					<DateRangeSelector control={form.control} />
+					<p className="text-xs">Category</p>
+				</CardContent>
+			</Form>
 		</Card>
 	);
 };

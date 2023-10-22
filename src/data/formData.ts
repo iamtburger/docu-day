@@ -35,8 +35,8 @@ export const searchEventsFormSchema = z.object({
 });
 
 const defaultDateRange = {
-	from: new Date(format(new Date(), "yyyy-MM-01")),
-	to: new Date(),
+	from: undefined,
+	to: undefined,
 };
 
 export const searchEventsDefaultValues = {
