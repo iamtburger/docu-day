@@ -2,6 +2,7 @@ import { ArrowUpDown, Download, ArrowUpRightSquare } from "lucide-react";
 import { Column, ColumnDef, Row } from "@tanstack/react-table";
 
 import {
+	Button,
 	Checkbox,
 	Dialog,
 	DialogContent,
@@ -14,6 +15,7 @@ import { downloadFile, getFormattedDate } from "@/utils/utils";
 import { fetchDocumentDownloadUrl } from "@/requests";
 import { useState } from "react";
 import { Badge } from "../ShadcnUi/badge";
+import { isAfter, isBefore } from "date-fns";
 
 export const selectRow = (
 	onRowSelectionChange: (value: any) => void,
@@ -93,6 +95,16 @@ export const createdAt = {
 		});
 		return <div className="text-right">{formattedDate}</div>;
 	},
+	// sortingFn: (rowA: any, rowB: any, columnId: string) => {
+	// 	const rowADate = new Date(rowA.getValue(columnId));
+	// 	const rowBDate = new Date(rowB.getValue(columnId));
+
+	// 	return isBefore(rowADate, rowBDate)
+	// 		? 1
+	// 		: isAfter(rowBDate, rowADate)
+	// 		? -1
+	// 		: 0;
+	// },
 };
 
 export const download = {
@@ -123,30 +135,94 @@ export const openEvent = {
 	cell: ({ row }: { row: Row<Event> }) => {
 		return (
 			<div className="flex justify-center cursor-pointer">
-				<Dialog>
-					<DialogTrigger>
-						<ArrowUpRightSquare size={16} />
-					</DialogTrigger>
-					<DialogContent>
-						<DialogHeader>Event Details</DialogHeader>
-						<div className="flex">
-							<div className="text-lg underline decoration-solid decoration-inherit decoration-1 italic">
-								{row.original.name}
-							</div>
-							<Badge className="w-fit capitalize ml-4">
-								{row.original.category}
-							</Badge>
-						</div>
-						<div className="text-xs font-light">
-							{getFormattedDate(row.original.eventDate)}
-						</div>
-						<div>{row.original.description}</div>
-						<DialogFooter>Delete</DialogFooter>
-					</DialogContent>
-				</Dialog>
+				<EventDialog {...row.original} />
 			</div>
 		);
 	},
+};
+
+// TODO: move these components from the column definitions module
+const EventDialog = ({
+	name,
+	category,
+	description,
+	id,
+	eventDate,
+}: {
+	name: string;
+	category: string;
+	description: string;
+	id: number;
+	eventDate: string;
+}) => {
+	const [isOpen, setIsOpen] = useState(false);
+
+	return (
+		<Dialog open={isOpen} onOpenChange={setIsOpen}>
+			<DialogTrigger>
+				<ArrowUpRightSquare size={16} />
+			</DialogTrigger>
+			<DialogContent>
+				<DialogHeader>Event Details</DialogHeader>
+				<div className="flex">
+					<div className="text-3xl underline decoration-solid decoration-inherit decoration-1">
+						{name}
+					</div>
+				</div>
+				<div className="text-xs font-light italic flex align-middle">
+					<Badge className="w-fit h-fit capitalize mr-4 text-xs">
+						{category}
+					</Badge>
+					<p className="self-center">{getFormattedDate(eventDate)}</p>
+				</div>
+				<div>{description}</div>
+				<DialogFooter>
+					<DeleteItemDialog
+						title="Are you sure you want to delete this event?"
+						onDelete={() => {
+							//trigger delete with id
+							setIsOpen(false);
+						}}
+					/>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
+	);
+};
+
+const DeleteItemDialog = ({
+	title,
+	onDelete,
+}: {
+	title: string;
+	onDelete: () => void;
+}) => {
+	const [isOpen, setIsOpen] = useState(false);
+
+	return (
+		<Dialog open={isOpen} onOpenChange={setIsOpen}>
+			<DialogTrigger asChild>
+				<Button variant="destructive" onClick={() => setIsOpen(true)}>
+					Delete
+				</Button>
+			</DialogTrigger>
+			<DialogContent>
+				<DialogHeader>{title}</DialogHeader>
+				<DialogFooter>
+					<Button onClick={() => setIsOpen(false)}>Cancel</Button>
+					<Button
+						variant="destructive"
+						onClick={() => {
+							onDelete();
+							setIsOpen(false);
+						}}
+					>
+						Delete
+					</Button>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
+	);
 };
 
 export const eventName = {
