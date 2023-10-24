@@ -28,12 +28,11 @@ export const createDocument = (fileName: string, userId: string) =>
 export const fetchDocuments = () => fetch(ApiEndpoints.DOCUMENTS);
 
 // TODO: add support for creating multiple categories
-export const createCategory = (category: string) => {
+export const createCategory = (category: string) =>
 	fetch(ApiEndpoints.CATEGORIES, {
 		method: "POST",
 		body: JSON.stringify({ name: category }),
 	});
-};
 
 export const fetchDocumentDownloadUrl = (fileName: string) =>
 	fetch(`${ApiEndpoints.DOCUMENT}?file=${fileName}`);
@@ -45,3 +44,5 @@ export const createEvent = (formData: EventFormSchema) =>
 	});
 
 export const fetchCategories = () => fetch(ApiEndpoints.CATEGORIES);
+
+export const fetchEvents = () => fetch(ApiEndpoints.EVENTS);

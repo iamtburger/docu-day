@@ -21,8 +21,8 @@ export async function POST(req: NextRequest) {
 			data: {
 				categories: {
 					connectOrCreate: {
-						where: { name: name.lowerCase() },
-						create: { name: name.lowerCase() },
+						where: { name: name.toLowerCase() },
+						create: { name: name.toLowerCase() },
 					},
 				},
 			},

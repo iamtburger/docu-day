@@ -38,6 +38,15 @@ export type EventDocument = {
 	downloadUrl?: string;
 };
 
+export type Event = {
+	id: number;
+	name: string;
+	description: string;
+	category: string;
+	eventDate: string;
+	documents?: EventDocument[];
+};
+
 export interface CreateEventForm {
 	name: string;
 	description: string;

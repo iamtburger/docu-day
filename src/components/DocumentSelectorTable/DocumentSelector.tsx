@@ -22,15 +22,20 @@ import {
 	Input,
 	FileUpload,
 } from "@/components";
-import { fetchDocuments } from "@/requests";
 import { RequestState } from "@/data/enums";
 
 interface DocumentsSelectorTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
+	withFilter?: boolean;
+	withFileUpload?: boolean;
+	fetchData: () => Promise<Response>;
 }
 
 function DocumentsSelectorTable<TData, TValue>({
 	columns,
+	fetchData,
+	withFilter = false,
+	withFileUpload = false,
 }: DocumentsSelectorTableProps<TData, TValue>) {
 	const [data, setData] = useState<TData[]>([]);
 	const [requestState, setRequestState] = useState<RequestState>(
@@ -57,35 +62,39 @@ function DocumentsSelectorTable<TData, TValue>({
 		},
 	});
 
-	const getDocuments = useCallback(async () => {
+	const handleFetchData = useCallback(async () => {
 		setRequestState(RequestState.PENDING);
 		try {
-			const res = await fetchDocuments();
-			const { documents } = await res.json();
-			setData(documents);
+			const res = await fetchData();
+			const { data } = await res.json();
+			setData(data);
 			setRequestState(RequestState.SUCCESS);
 		} catch (e) {
 			console.error("Something went wrong while fetching Documents", e);
 			setRequestState(RequestState.ERROR);
 		}
-	}, []);
+	}, [fetchData]);
 
 	useEffect(() => {
-		getDocuments();
-	}, [user, getDocuments]);
+		if (Boolean(user)) {
+			handleFetchData();
+		}
+	}, [user, handleFetchData]);
 
 	return (
 		<div>
 			<div className="flex">
-				<Input
-					placeholder="Filter documents..."
-					value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-					onChange={(event) =>
-						table.getColumn("name")?.setFilterValue(event.target.value)
-					}
-					className="max-w-[40%] mb-2"
-				/>
-				<FileUpload onClose={getDocuments} />
+				{withFilter && (
+					<Input
+						placeholder="Filter documents..."
+						value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+						onChange={(event) =>
+							table.getColumn("name")?.setFilterValue(event.target.value)
+						}
+						className="max-w-[40%] mb-2"
+					/>
+				)}
+				{withFileUpload && <FileUpload onClose={handleFetchData} />}
 			</div>
 			<div className="rounded-md border overflow-y-scroll max-h-[60vh]">
 				<Table>

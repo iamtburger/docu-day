@@ -12,9 +12,11 @@ import {
 	DialogContent,
 } from "@/components";
 import { createCategory } from "@/requests";
+import { useToast } from "../ShadcnUi/use-toast";
 
 const CreateCategory = () => {
 	const [category, setCategory] = useState("");
+	const { toast } = useToast();
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
@@ -31,8 +33,21 @@ const CreateCategory = () => {
 					placeholder="car, phone, health"
 				/>
 				<Button
-					onClick={() => {
-						createCategory(category);
+					onClick={async () => {
+						try {
+							const response = await createCategory(category);
+							if (Boolean(response.ok)) {
+								toast({
+									title: "Category created",
+								});
+								setCategory("");
+							}
+						} catch (e) {
+							console.error(e);
+							toast({
+								title: "Something went wrong",
+							});
+						}
 					}}
 				>
 					Save

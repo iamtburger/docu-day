@@ -1,7 +1,13 @@
 import { ColumnDef } from "@tanstack/react-table";
 
-import { EventDocument } from "@/data/types";
-import { createdAt, download, fileName, selectRow } from "./columnDefinitions";
+import { Event, EventDocument } from "@/data/types";
+import {
+	createdAt,
+	download,
+	fileName,
+	selectRow,
+	openEvent,
+} from "./columnDefinitions";
 
 export const getDocumentSelectorTableDef = (
 	onRowSelectionChange: (value: any) => void,
@@ -12,3 +18,8 @@ export const getDocumentSelectorTableDef = (
 	createdAt,
 	download,
 ];
+
+const eventsTableDef = (
+	onRowSelectionChange: (value: any) => void,
+	previousValue: any
+): ColumnDef<Event>[] => [openEvent];

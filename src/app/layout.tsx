@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
 import Navbar from "@/components/Navbar/Navbar";
+import { Toaster } from "@/components/ShadcnUi/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,6 +24,7 @@ export default function RootLayout({
 				<body className="min-h-screen">
 					<Navbar />
 					{children}
+					<Toaster />
 				</body>
 			</UserProvider>
 		</html>

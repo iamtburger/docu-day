@@ -34,7 +34,7 @@ model Event {
   description String?
   event_date DateTime
   user User @relation(fields: [user_id], references: [id])
-  user_id String @unique
+  user_id String
   alert DateTime?
   created_at DateTime @default(now())
   documents EventDocuments[]

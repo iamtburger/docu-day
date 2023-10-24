@@ -15,6 +15,7 @@ import { DatePickerFormInput } from "../Inputs/DatePicker";
 import { CreateCategory } from "@/components";
 import { createEvent } from "@/requests";
 import { CreateEventForm } from "@/data/types";
+import { useToast } from "@/components/ShadcnUi/use-toast";
 
 const CreateEventForm = ({
 	defaultValues,
@@ -25,6 +26,8 @@ const CreateEventForm = ({
 		resolver: zodResolver(createEventFormSchema),
 		defaultValues: defaultValues,
 	});
+
+	const { toast } = useToast();
 
 	return (
 		<Form {...form}>
@@ -43,7 +46,18 @@ const CreateEventForm = ({
 			<div className="col-span-3 pl-10 sm:mt-4 sm:mb-4">
 				<Button
 					onClick={async () => {
-						createEvent(form.getValues());
+						try {
+							const response = await createEvent(form.getValues());
+							if (Boolean(response.ok)) {
+								toast({
+									title: "Event created",
+								});
+							}
+							form.reset();
+						} catch (e) {
+							console.error(e);
+							toast({ title: "Something went wrong" });
+						}
 					}}
 					className="w-1/2"
 				>

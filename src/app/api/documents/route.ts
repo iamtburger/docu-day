@@ -17,7 +17,7 @@ export async function GET() {
 			...document,
 		}));
 
-		return new NextResponse(JSON.stringify({ documents: mappedDocuments }), {
+		return new NextResponse(JSON.stringify({ data: mappedDocuments }), {
 			status: 200,
 		});
 	} catch (e) {

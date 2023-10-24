@@ -1,10 +1,19 @@
-import { ArrowUpDown, Download } from "lucide-react";
+import { ArrowUpDown, Download, ArrowUpRightSquare } from "lucide-react";
 import { Column, ColumnDef, Row } from "@tanstack/react-table";
 
-import { Checkbox } from "../ShadcnUi";
-import { EventDocument } from "@/data/types";
-import { downloadFile } from "@/utils/utils";
+import {
+	Checkbox,
+	Dialog,
+	DialogContent,
+	DialogFooter,
+	DialogHeader,
+	DialogTrigger,
+} from "../ShadcnUi";
+import { Event, EventDocument } from "@/data/types";
+import { downloadFile, getFormattedDate } from "@/utils/utils";
 import { fetchDocumentDownloadUrl } from "@/requests";
+import { useState } from "react";
+import { Badge } from "../ShadcnUi/badge";
 
 export const selectRow = (
 	onRowSelectionChange: (value: any) => void,
@@ -103,4 +112,74 @@ export const download = {
 			/>
 		</div>
 	),
+};
+
+// Format description
+// Add list of files
+// delete button -> make it red and add a popup to confirm -> toast
+export const openEvent = {
+	accessorKey: "openEvent",
+	header: "",
+	cell: ({ row }: { row: Row<Event> }) => {
+		return (
+			<div className="flex justify-center cursor-pointer">
+				<Dialog>
+					<DialogTrigger>
+						<ArrowUpRightSquare size={16} />
+					</DialogTrigger>
+					<DialogContent>
+						<DialogHeader>Event Details</DialogHeader>
+						<div className="flex">
+							<div className="text-lg underline decoration-solid decoration-inherit decoration-1 italic">
+								{row.original.name}
+							</div>
+							<Badge className="w-fit capitalize ml-4">
+								{row.original.category}
+							</Badge>
+						</div>
+						<div className="text-xs font-light">
+							{getFormattedDate(row.original.eventDate)}
+						</div>
+						<div>{row.original.description}</div>
+						<DialogFooter>Delete</DialogFooter>
+					</DialogContent>
+				</Dialog>
+			</div>
+		);
+	},
+};
+
+export const eventName = {
+	accessorKey: "name",
+	header: ({ column }: { column: Column<Event, unknown> }) => (
+		<div
+			onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+			className="pl-0 flex align-middle "
+		>
+			Name
+			<ArrowUpDown className="ml-2 h-4 w-4 self-center cursor-pointer" />
+		</div>
+	),
+};
+
+export const eventDate = {
+	accessorKey: "eventDate",
+	header: ({ column }: { column: Column<Event, unknown> }) => (
+		<div
+			onClick={() => column.toggleSorting(column.getIsSorted() === "desc")}
+			className="pl-0 flex align-middle justify-end"
+		>
+			Upload time
+			<ArrowUpDown className="ml-2 h-4 w-4 self-center cursor-pointer" />
+		</div>
+	),
+	cell: ({ row }: { row: Row<Event> }) => {
+		const date = new Date(row.original.eventDate);
+		const formattedDate = date.toLocaleDateString("en-GB", {
+			day: "2-digit",
+			month: "2-digit",
+			year: "numeric",
+		});
+		return <div className="text-right">{formattedDate}</div>;
+	},
 };

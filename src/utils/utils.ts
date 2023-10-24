@@ -15,3 +15,12 @@ export function downloadFile(url: string, fileName: string) {
 }
 
 export const getFolderName = (userId: string) => userId.replace("|", "-");
+
+export const getFormattedDate = (dateString: string) => {
+	const date = new Date(dateString);
+	return date.toLocaleDateString("en-GB", {
+		day: "2-digit",
+		month: "2-digit",
+		year: "numeric",
+	});
+};
