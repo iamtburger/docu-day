@@ -25,13 +25,13 @@ import {
 import { fetchDocuments } from "@/requests";
 import { RequestState } from "@/data/enums";
 
-interface DataTableProps<TData, TValue> {
+interface DocumentsSelectorTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
 }
 
 function DocumentsSelectorTable<TData, TValue>({
 	columns,
-}: DataTableProps<TData, TValue>) {
+}: DocumentsSelectorTableProps<TData, TValue>) {
 	const [data, setData] = useState<TData[]>([]);
 	const [requestState, setRequestState] = useState<RequestState>(
 		RequestState.NOT_STARTED
