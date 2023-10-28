@@ -1,16 +1,57 @@
 import prisma from "@/prisma/prisma";
 import { getSession } from "@auth0/nextjs-auth0";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
 	const session = await getSession();
+
+	const searchParams = req.nextUrl.searchParams;
+	const dateRangeFrom = searchParams.get("dateRangeFrom");
+	const dateRangeTo = searchParams.get("dateRangeTo");
+	const searchTerm = searchParams.get("searchTerm");
+	const category = searchParams.get("category");
+
+	let search = {};
+
+	if (dateRangeFrom && dateRangeTo) {
+		search = {
+			...search,
+			event_date: {
+				lte: new Date(dateRangeFrom).toISOString(),
+				gte: new Date(dateRangeTo).toISOString(),
+			},
+		};
+	}
+
+	if (searchTerm) {
+		search = {
+			...search,
+			OR: [
+				{
+					name: { contains: searchTerm },
+				},
+				{
+					description: { contains: searchTerm },
+				},
+			],
+		};
+	}
+
+	if (category) {
+		search = {
+			...search,
+			category_id: Number(category),
+		};
+	}
 
 	try {
 		const events = await prisma.event.findMany({
 			where: {
 				user_id: session?.user.sub,
+				...search,
 			},
 		});
+
 		const categories = await prisma.category.findMany({});
 
 		const mappedEvents = events.map((event) => {

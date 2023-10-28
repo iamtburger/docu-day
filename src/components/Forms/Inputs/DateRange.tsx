@@ -44,6 +44,7 @@ const DateRangeSelector = ({
 			control={control}
 			name="dateRange"
 			render={({ field: { value, onChange } }) => {
+				console.log(value);
 				const disableDateAfterEnd = (day: Date) =>
 					day < new Date(value.from || "");
 

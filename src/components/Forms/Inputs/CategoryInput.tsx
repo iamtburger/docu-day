@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Control } from "react-hook-form";
+import { Control, FieldValues, Path } from "react-hook-form";
 import { Check, ChevronsUpDown } from "lucide-react";
 
 import { cn } from "@/utils/utils";
@@ -21,14 +21,19 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components";
-import { EventFormSchema } from "@/data/types";
 import { fetchCategories } from "@/requests";
 
-export function CategoryInput({
+//TODO: fix atrocious typing
+
+type FormControl<T extends FieldValues> = Control<T>;
+
+type CategoryInputProps<T extends FieldValues> = {
+	control: FormControl<T>;
+};
+
+export function CategoryInput<T extends FieldValues>({
 	control,
-}: {
-	control: Control<EventFormSchema>;
-}) {
+}: CategoryInputProps<T>) {
 	const [categories, setCategories] = useState<{ id: string; name: string }[]>(
 		[]
 	);
@@ -50,7 +55,7 @@ export function CategoryInput({
 	return (
 		<FormField
 			control={control}
-			name="category"
+			name={"category" as Path<T>}
 			render={({ field }) => (
 				<FormItem className="flex flex-col pb-5">
 					<FormLabel>Category</FormLabel>
@@ -75,7 +80,7 @@ export function CategoryInput({
 						</PopoverTrigger>
 						<PopoverContent className="w-[200px] p-0">
 							<Command>
-								<CommandInput placeholder="Search framework..." />
+								<CommandInput placeholder="Search category..." />
 								<CommandEmpty>No category found.</CommandEmpty>
 								<CommandGroup>
 									{categories.map((category) => (
