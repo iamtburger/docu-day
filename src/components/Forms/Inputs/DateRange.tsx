@@ -80,9 +80,7 @@ const DateRangeSelector = ({
 									<DatePicker
 										id="from-selector"
 										value={value.from}
-										onChange={(date) =>
-											onChange(() => ({ ...value, from: date }))
-										}
+										onChange={(date) => onChange({ ...value, from: date })}
 										disabled={disableDateBeforeStart}
 										label="From"
 									/>
@@ -91,7 +89,7 @@ const DateRangeSelector = ({
 									id="to-selector"
 									value={value.to}
 									onChange={(date) => {
-										onChange(() => ({ ...value, to: date }));
+										onChange({ ...value, to: date });
 										setPopoverOpen(false);
 									}}
 									disabled={disableDateAfterEnd}

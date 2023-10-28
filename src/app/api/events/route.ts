@@ -17,8 +17,8 @@ export async function GET(req: NextRequest) {
 		search = {
 			...search,
 			event_date: {
-				lte: new Date(dateRangeFrom).toISOString(),
-				gte: new Date(dateRangeTo).toISOString(),
+				gte: new Date(dateRangeFrom).toISOString(),
+				lte: new Date(dateRangeTo).toISOString(),
 			},
 		};
 	}

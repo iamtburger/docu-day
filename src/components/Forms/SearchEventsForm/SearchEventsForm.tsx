@@ -70,9 +70,8 @@ function composeSearchParams(arg: {
 		return "";
 	}
 	return keysArray.reduce((acc, curr) => {
-		console.log(acc, curr);
 		if (arg[curr] !== undefined && arg[curr] !== "") {
-			acc = `${acc}${acc === "" ? "" : "&"}${curr}=${arg[curr]}`;
+			acc = `${acc}${acc === "?" ? "" : "&"}${curr}=${arg[curr]}`;
 			return acc;
 		}
 		return acc;
