@@ -45,4 +45,6 @@ export const createEvent = (formData: EventFormSchema) =>
 
 export const fetchCategories = () => fetch(ApiEndpoints.CATEGORIES);
 
-export const fetchEvents = () => fetch(ApiEndpoints.EVENTS);
+export const fetchEvents = (params?: string) => {
+	return fetch(`${ApiEndpoints.EVENTS}${params !== undefined ? params : ""}`);
+};
