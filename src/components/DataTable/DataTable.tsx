@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
 	ColumnDef,
 	useReactTable,
@@ -24,12 +24,16 @@ interface DocumentsSelectorTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
 	data: TData[];
 	isLoading: boolean;
+	globalFilter?: string;
+	setGlobalFilter?: Dispatch<SetStateAction<string>>;
 }
 
 function DataTable<TData, TValue>({
 	columns,
 	data,
+	setGlobalFilter,
 	isLoading = false,
+	globalFilter = "",
 }: DocumentsSelectorTableProps<TData, TValue>) {
 	const [rowSelection, setRowSelection] = useState({});
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -40,41 +44,50 @@ function DataTable<TData, TValue>({
 		getCoreRowModel: getCoreRowModel(),
 		onRowSelectionChange: setRowSelection,
 		onColumnFiltersChange: setColumnFilters,
+		onGlobalFilterChange: setGlobalFilter,
 		getFilteredRowModel: getFilteredRowModel(),
 		onSortingChange: setSorting,
 		getSortedRowModel: getSortedRowModel(),
 		state: {
 			rowSelection,
 			columnFilters,
+			globalFilter,
 			sorting,
 		},
 	});
 
+	// 	value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+	// 	onChange={(event) =>
+	// 		table.getColumn("name")?.setFilterValue(event.target.value)
+	// 	}
+
+	// useEffect(() => {
+	// 	table.getAllColumns()?.setFilterValue(searchTerm);
+	// }, [searchTerm, table]);
+
 	return (
-		<div>
-			<div className="rounded-md border overflow-y-scroll max-h-[60vh]">
-				<Table>
-					<TableHeader>
-						{table.getHeaderGroups().map((headerGroup) => (
-							<TableRow key={headerGroup.id}>
-								{headerGroup.headers.map((header) => (
-									<TableHead key={header.id}>
-										{header.isPlaceholder
-											? null
-											: flexRender(
-													header.column.columnDef.header,
-													header.getContext()
-											  )}
-									</TableHead>
-								))}
-							</TableRow>
-						))}
-					</TableHeader>
-					<TableBody>
-						{getTableContent(isLoading, table, columns.length)}
-					</TableBody>
-				</Table>
-			</div>
+		<div className="rounded-md border overflow-y-scroll max-h-[60vh]">
+			<Table>
+				<TableHeader>
+					{table.getHeaderGroups().map((headerGroup) => (
+						<TableRow key={headerGroup.id}>
+							{headerGroup.headers.map((header) => (
+								<TableHead key={header.id}>
+									{header.isPlaceholder
+										? null
+										: flexRender(
+												header.column.columnDef.header,
+												header.getContext()
+										  )}
+								</TableHead>
+							))}
+						</TableRow>
+					))}
+				</TableHeader>
+				<TableBody>
+					{getTableContent(isLoading, table, columns.length)}
+				</TableBody>
+			</Table>
 		</div>
 	);
 }
