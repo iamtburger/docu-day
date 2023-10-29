@@ -48,3 +48,6 @@ export const fetchCategories = () => fetch(ApiEndpoints.CATEGORIES);
 export const fetchEvents = (params?: string) => {
 	return fetch(`${ApiEndpoints.EVENTS}${params !== undefined ? params : ""}`);
 };
+
+export const deleteEvent = (id: number) =>
+	fetch(`${ApiEndpoints.DELETE}?id=${id}`, { method: "DELETE" });

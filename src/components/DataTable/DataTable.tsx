@@ -1,38 +1,36 @@
-"use client";
-
 import { useState } from "react";
 import {
-	ColumnFiltersState,
-	SortingState,
-	flexRender,
-	getCoreRowModel,
-	getFilteredRowModel,
-	getSortedRowModel,
-	useReactTable,
-	Table as TableType,
 	ColumnDef,
+	useReactTable,
+	getCoreRowModel,
+	flexRender,
+	ColumnFiltersState,
+	getFilteredRowModel,
+	SortingState,
+	getSortedRowModel,
+	Table as TableType,
 } from "@tanstack/react-table";
-import { Table } from "lucide-react";
 
 import {
-	TableHeader,
-	TableRow,
-	TableHead,
+	Table,
 	TableBody,
 	TableCell,
-} from "../ShadcnUi";
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components";
 
-interface DataTableProps<TData, TValue> {
-	isLoading: boolean;
-	data: TData[];
+interface DocumentsSelectorTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
+	data: TData[];
+	isLoading: boolean;
 }
 
 function DataTable<TData, TValue>({
-	isLoading,
-	data = [],
 	columns,
-}: DataTableProps<TData, TValue>) {
+	data,
+	isLoading = false,
+}: DocumentsSelectorTableProps<TData, TValue>) {
 	const [rowSelection, setRowSelection] = useState({});
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [sorting, setSorting] = useState<SortingState>([]);
@@ -53,27 +51,35 @@ function DataTable<TData, TValue>({
 	});
 
 	return (
-		<Table>
-			<TableHeader>
-				{table.getHeaderGroups().map((headerGroup) => (
-					<TableRow key={headerGroup.id}>
-						{headerGroup.headers.map((header) => (
-							<TableHead key={header.id}>
-								{header.isPlaceholder
-									? null
-									: flexRender(
-											header.column.columnDef.header,
-											header.getContext()
-									  )}
-							</TableHead>
+		<div>
+			<div className="rounded-md border overflow-y-scroll max-h-[60vh]">
+				<Table>
+					<TableHeader>
+						{table.getHeaderGroups().map((headerGroup) => (
+							<TableRow key={headerGroup.id}>
+								{headerGroup.headers.map((header) => (
+									<TableHead key={header.id}>
+										{header.isPlaceholder
+											? null
+											: flexRender(
+													header.column.columnDef.header,
+													header.getContext()
+											  )}
+									</TableHead>
+								))}
+							</TableRow>
 						))}
-					</TableRow>
-				))}
-			</TableHeader>
-			<TableBody>{getTableContent(isLoading, table, columns.length)}</TableBody>
-		</Table>
+					</TableHeader>
+					<TableBody>
+						{getTableContent(isLoading, table, columns.length)}
+					</TableBody>
+				</Table>
+			</div>
+		</div>
 	);
 }
+
+export default DataTable;
 
 function getTableContent<TData>(
 	isLoading: boolean,
@@ -116,5 +122,3 @@ function getTableContent<TData>(
 		);
 	}
 }
-
-export default DataTable;

@@ -7,4 +7,5 @@ export enum ApiEndpoints {
 	EVENTS = "/api/events",
 	LOGIN = "/api/auth/login",
 	LOGOUT = "/api/auth/logout",
+	DELETE = "/api/delete",
 }

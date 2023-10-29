@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Card, CardContent, CardHeader } from "@/components/ShadcnUi/card";
 
-import { Button, DocumentsSelectorTable, Form } from "@/components";
+import { Button, Form } from "@/components";
 import DateRangeSelector from "@/components/Forms/Inputs/DateRange";
 import EventSearchInput from "../Inputs/EventSearchInput";
 import { CategoryInput } from "../Inputs/CategoryInput";
@@ -18,6 +18,7 @@ import {
 	openEvent,
 } from "@/components/DocumentSelectorTable/columnDefinitions";
 import { fetchEvents } from "@/requests/requests";
+import DataTable from "@/components/DataTable/DataTable";
 
 const SearchEventsForm = ({
 	defaultValues,
@@ -30,6 +31,8 @@ const SearchEventsForm = ({
 	});
 
 	const [searchParams, setSearchParams] = useState("");
+	const [events, setEvents] = useState([]);
+	const [isLoading, setIsLoading] = useState(false);
 
 	const getSearchParams = useCallback(async () => {
 		const formValues = form.getValues();
@@ -42,11 +45,19 @@ const SearchEventsForm = ({
 		setSearchParams(params);
 	}, [form]);
 
-	// FIXME: this is a workaround, until abstracting the base datatable not working. So probably forever
 	const searchEvents = useCallback(
 		() => fetchEvents(searchParams),
 		[searchParams]
 	);
+
+	useEffect(() => {
+		setIsLoading(true);
+		searchEvents().then(async (res) => {
+			const { data } = await res.json();
+			setEvents(data);
+			setIsLoading(false);
+		});
+	}, [searchEvents]);
 
 	return (
 		<>
@@ -72,9 +83,10 @@ const SearchEventsForm = ({
 				</Card>
 			</div>
 			<div className="lg:col-span-4 col-span-6 m-4">
-				<DocumentsSelectorTable
+				<DataTable
 					columns={[eventName, eventDate, openEvent]}
-					fetchData={searchEvents}
+					data={events}
+					isLoading={isLoading}
 				/>
 			</div>
 		</>
