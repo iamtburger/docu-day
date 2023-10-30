@@ -6,7 +6,7 @@ import {
 	download,
 	fileName,
 	selectRow,
-	openEvent,
+	//openEvent,
 } from "./columnDefinitions";
 
 export const getDocumentSelectorTableDef = (
@@ -19,7 +19,7 @@ export const getDocumentSelectorTableDef = (
 	download,
 ];
 
-const eventsTableDef = (
-	onRowSelectionChange: (value: any) => void,
-	previousValue: any
-): ColumnDef<Event>[] => [openEvent];
+// const eventsTableDef = (
+// 	onRowSelectionChange: (value: any) => void,
+// 	previousValue: any
+// ): ColumnDef<Event>[] => [openEvent];

@@ -28,12 +28,14 @@ const EventDialog = ({
 	description,
 	id,
 	eventDate,
+	refreshDataTable,
 }: {
 	name: string;
 	category: string;
 	description: string;
 	id: number;
 	eventDate: string;
+	refreshDataTable: () => void;
 }) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const { toast } = useToast();
@@ -58,6 +60,7 @@ const EventDialog = ({
 				</div>
 				<Separator />
 				<div className="min-h-[50px] p-1">{description}</div>
+				<div></div>
 				<DialogFooter>
 					<DeleteItemDialog
 						title="Are you sure you want to delete this event?"
@@ -69,6 +72,7 @@ const EventDialog = ({
 									});
 								})
 								.then(() => {
+									refreshDataTable();
 									setIsOpen(false);
 								})
 								.catch((e) => {

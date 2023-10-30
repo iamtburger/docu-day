@@ -116,20 +116,17 @@ export const download = {
 	),
 };
 
-// Format description
-// Add list of files
-// delete button -> make it red and add a popup to confirm -> toast
-export const openEvent = {
+export const composeOpenEventColumn = (refreshDataTable: any) => ({
 	accessorKey: "openEvent",
 	header: "",
 	cell: ({ row }: { row: Row<Event> }) => {
 		return (
 			<div className="flex justify-center cursor-pointer">
-				<EventDialog {...row.original} />
+				<EventDialog {...row.original} refreshDataTable={refreshDataTable} />
 			</div>
 		);
 	},
-};
+});
 
 export const eventName = {
 	accessorKey: "name",

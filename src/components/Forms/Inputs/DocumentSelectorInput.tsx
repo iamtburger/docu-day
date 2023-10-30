@@ -4,9 +4,6 @@ import { FormField, FormItem } from "../../ShadcnUi";
 import { EventFormSchema } from "@/data/types";
 import DocumentsSelectorTable from "../../DocumentSelectorTable";
 import { getDocumentSelectorTableDef } from "../../DocumentSelectorTable/tableDefinitions";
-import { fetchDocuments } from "@/requests";
-
-// TODO: move columns and fetchData to DocumentSelectorTable component
 
 const DocumentSelectorFormInput = ({
 	control,
@@ -24,7 +21,6 @@ const DocumentSelectorFormInput = ({
 							(value) => field.onChange(value),
 							field.value
 						)}
-						fetchData={fetchDocuments}
 					/>
 				</FormItem>
 			)}

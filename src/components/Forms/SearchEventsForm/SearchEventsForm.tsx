@@ -15,7 +15,8 @@ import { SearchEventFormSchema, SearchEventsFormType } from "@/data/types";
 import {
 	eventName,
 	eventDate,
-	openEvent,
+	// openEvent,
+	composeOpenEventColumn,
 } from "@/components/DocumentSelectorTable/columnDefinitions";
 import { fetchEvents } from "@/requests/requests";
 import DataTable from "@/components/DataTable/DataTable";
@@ -36,28 +37,32 @@ const SearchEventsForm = ({
 
 	const getSearchParams = useCallback(async () => {
 		const formValues = form.getValues();
-		const params = composeSearchParams({
-			dateRangeFrom: formValues.dateRange.from,
-			dateRangeTo: formValues.dateRange.to,
-			searchterm: formValues.searchTerm,
-			category: formValues.category,
-		});
+		const params = composeSearchParams(
+			{
+				dateRangeFrom: formValues.dateRange.from,
+				dateRangeTo: formValues.dateRange.to,
+				searchTerm: formValues.searchTerm,
+				category: formValues.category,
+			},
+			searchEventFormEmptyValues
+		);
 		setSearchParams(params);
 	}, [form]);
 
-	const searchEvents = useCallback(
-		() => fetchEvents(searchParams),
-		[searchParams]
-	);
-
-	useEffect(() => {
+	const searchEvents = useCallback(() => {
 		setIsLoading(true);
-		searchEvents().then(async (res) => {
+		fetchEvents(searchParams).then(async (res) => {
 			const { data } = await res.json();
 			setEvents(data);
 			setIsLoading(false);
 		});
+	}, [searchParams]);
+
+	useEffect(() => {
+		searchEvents();
 	}, [searchEvents]);
+
+	const openEvent = composeOpenEventColumn(searchEvents);
 
 	return (
 		<>
@@ -93,20 +98,30 @@ const SearchEventsForm = ({
 	);
 };
 
-function composeSearchParams(arg: {
-	[key: string]: string | number | undefined | Date;
-}) {
+function composeSearchParams(
+	arg: {
+		[key: string]: string | number | undefined | Date;
+	},
+	emptyValues: { [key: string]: string | undefined }
+) {
 	const keysArray = Object.keys(arg);
 	if (keysArray.length === 0) {
 		return "";
 	}
 	return keysArray.reduce((acc, curr) => {
-		if (arg[curr] !== undefined && arg[curr] !== "") {
+		if (emptyValues[curr] !== arg[curr]) {
 			acc = `${acc}${acc === "?" ? "" : "&"}${curr}=${arg[curr]}`;
 			return acc;
 		}
 		return acc;
 	}, "?");
 }
+
+const searchEventFormEmptyValues: Record<string, string | undefined> = {
+	searchTerm: "",
+	dateRangeFrom: undefined,
+	dateRangeTo: undefined,
+	category: "",
+};
 
 export default SearchEventsForm;

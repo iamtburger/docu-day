@@ -28,10 +28,10 @@ export async function GET(req: NextRequest) {
 			...search,
 			OR: [
 				{
-					name: { contains: searchTerm },
+					name: { contains: searchTerm, mode: "insensitive" },
 				},
 				{
-					description: { contains: searchTerm },
+					description: { contains: searchTerm, mode: "insensitive" },
 				},
 			],
 		};

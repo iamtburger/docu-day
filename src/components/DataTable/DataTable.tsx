@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import {
 	ColumnDef,
 	useReactTable,
@@ -55,15 +55,6 @@ function DataTable<TData, TValue>({
 			sorting,
 		},
 	});
-
-	// 	value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-	// 	onChange={(event) =>
-	// 		table.getColumn("name")?.setFilterValue(event.target.value)
-	// 	}
-
-	// useEffect(() => {
-	// 	table.getAllColumns()?.setFilterValue(searchTerm);
-	// }, [searchTerm, table]);
 
 	return (
 		<div className="rounded-md border overflow-y-scroll max-h-[60vh]">
