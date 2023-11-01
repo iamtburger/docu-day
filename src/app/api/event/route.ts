@@ -50,3 +50,29 @@ export async function POST(req: NextRequest) {
 		return new NextResponse(JSON.stringify(e), { status: 500 });
 	}
 }
+
+// export async function GET(req: NextRequest) {
+// 	const session = await getSession();
+
+// 	const body = req.nextUrl.searchParams;
+// 	const eventId = body.get("eventId");
+
+// 	if (!eventId) {
+// 		return new NextResponse(JSON.stringify("Missing event id"), {
+// 			status: 400,
+// 		});
+// 	}
+
+// 	try {
+// 		const event = prisma.event.findFirst({
+// 			where: {
+// 				user_id: session?.user.sub,
+// 				id: Number(eventId),
+// 			},
+// 		});
+// 		return new NextResponse(JSON.stringify(event), { status: 200 });
+// 	} catch (e) {
+// 		console.log(e);
+// 		return new NextResponse(JSON.stringify(e), { status: 500 });
+// 	}
+// }

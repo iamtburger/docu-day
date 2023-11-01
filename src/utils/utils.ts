@@ -24,3 +24,36 @@ export const getFormattedDate = (dateString: string) => {
 		year: "numeric",
 	});
 };
+
+export function composeSearchParams(
+	arg: {
+		[key: string]: string | number | undefined | Date;
+	},
+	emptyValues: { [key: string]: string | undefined }
+) {
+	const keysArray = Object.keys(arg);
+	if (keysArray.length === 0) {
+		return "";
+	}
+	return keysArray.reduce((acc, curr) => {
+		if (emptyValues[curr] !== arg[curr]) {
+			acc = `${acc}${acc === "?" ? "" : "&"}${curr}=${arg[curr]}`;
+			return acc;
+		}
+		return acc;
+	}, "?");
+}
+
+export function mapEventsWithCategories(events: any, categories: any) {
+	return events.map((event: any) => {
+		return {
+			id: event.id,
+			name: event.name,
+			eventDate: event.event_date,
+			description: event.description,
+			category: (categories ?? []).find(
+				(category: any) => event.category_id === category.id
+			)?.name,
+		};
+	});
+}

@@ -1,5 +1,5 @@
 import { createEventFormDefaultValues } from "@/data/formData";
-import CreateEventForm from "@/components/Forms/CreateEventForm/CreateEventForm";
+import { CreateEventForm } from "@/components/Forms/EventForm/EventForm";
 
 async function CreateEvent() {
 	return (

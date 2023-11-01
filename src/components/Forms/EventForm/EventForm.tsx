@@ -6,7 +6,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ShadcnUi/button";
 import { Form } from "@/components/ShadcnUi/form";
-import { createEventFormSchema } from "@/data/formData";
+import {
+	createEventFormDefaultValues,
+	createEventFormSchema,
+} from "@/data/formData";
 import { DocumentSelectorFormInput } from "../Inputs/DocumentSelectorInput";
 import { EventDescriptionFormInput } from "../Inputs/EventDescriptionInput";
 import { EventNameFormInput } from "../Inputs/EventNameInput";
@@ -14,13 +17,16 @@ import { CategoryInput } from "../Inputs/CategoryInput";
 import { DatePickerFormInput } from "../Inputs/DatePicker";
 import { CreateCategory } from "@/components";
 import { createEvent } from "@/requests";
-import { CreateEventForm } from "@/data/types";
+import { CreateEventFormType } from "@/data/types";
 import { useToast } from "@/components/ShadcnUi/use-toast";
+import { editEvent } from "@/requests/requests";
 
-const CreateEventForm = ({
+const EventForm = ({
 	defaultValues,
+	onSave = createEvent,
 }: {
-	defaultValues: CreateEventForm;
+	defaultValues: CreateEventFormType;
+	onSave?: (form: any) => Promise<any>;
 }) => {
 	const form = useForm<z.infer<typeof createEventFormSchema>>({
 		resolver: zodResolver(createEventFormSchema),
@@ -41,13 +47,18 @@ const CreateEventForm = ({
 				<DatePickerFormInput control={form.control} />
 			</div>
 			<div className="col-span-3 container mx-auto lg:py-10 pl-10">
-				<DocumentSelectorFormInput control={form.control} />
+				<DocumentSelectorFormInput
+					control={form.control}
+					defaultRowSelection={defaultValues.documents.map(
+						(document) => document.id
+					)}
+				/>
 			</div>
 			<div className="col-span-3 pl-10 sm:mt-4 sm:mb-4">
 				<Button
 					onClick={async () => {
 						try {
-							const response = await createEvent(form.getValues());
+							const response = await onSave(form.getValues());
 							if (Boolean(response.ok)) {
 								toast({
 									title: "Event created",
@@ -68,4 +79,16 @@ const CreateEventForm = ({
 	);
 };
 
-export default CreateEventForm;
+export const CreateEventForm = ({
+	defaultValues,
+}: {
+	defaultValues: CreateEventFormType;
+}) => <EventForm defaultValues={defaultValues} />;
+
+export const EditEventForm = ({
+	defaultValues,
+}: {
+	defaultValues: CreateEventFormType;
+}) => {
+	return <EventForm defaultValues={defaultValues} onSave={editEvent} />;
+};

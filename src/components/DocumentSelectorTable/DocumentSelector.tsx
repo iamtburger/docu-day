@@ -1,22 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
-import {
-	ColumnDef,
-	flexRender,
-	Table as TableType,
-} from "@tanstack/react-table";
+import { ColumnDef, Table as TableType } from "@tanstack/react-table";
 import { useUser } from "@auth0/nextjs-auth0/client";
 
-import { TableCell, TableRow, Input, FileUpload } from "@/components";
+import { Input, FileUpload } from "@/components";
 import { RequestState } from "@/data/enums";
 import DataTable from "../DataTable/DataTable";
 import { fetchDocuments } from "@/requests";
 
 interface DocumentsSelectorTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
+	defaultRowSelection?: number[];
 }
 
 function DocumentsSelectorTable<TData, TValue>({
 	columns,
+	defaultRowSelection,
 }: DocumentsSelectorTableProps<TData, TValue>) {
 	const [data, setData] = useState<TData[]>([]);
 	const [requestState, setRequestState] = useState<RequestState>(
@@ -61,6 +59,7 @@ function DocumentsSelectorTable<TData, TValue>({
 				isLoading={requestState === RequestState.PENDING}
 				globalFilter={searchTerm}
 				setGlobalFilter={setSearchTerm}
+				defaultRowSelection={defaultRowSelection}
 			/>
 		</div>
 	);

@@ -12,6 +12,7 @@ export const selectRow = (
 	previousValue: any
 ): ColumnDef<EventDocument> => ({
 	id: "select",
+	accessorFn: (row) => row.id,
 	header: ({ table }) => (
 		<Checkbox
 			checked={table.getIsAllPageRowsSelected()}

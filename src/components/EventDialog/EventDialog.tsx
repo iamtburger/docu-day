@@ -1,4 +1,4 @@
-import { ArrowUpRightSquare } from "lucide-react";
+import { ArrowUpRightSquare, Download } from "lucide-react";
 import { Row } from "@tanstack/react-table";
 
 import {
@@ -9,19 +9,18 @@ import {
 	DialogHeader,
 	DialogTrigger,
 } from "../ShadcnUi";
-import { Event } from "@/data/types";
-import { getFormattedDate } from "@/utils/utils";
-import { useState } from "react";
+import { EventDocument } from "@/data/types";
+import { downloadFile, getFormattedDate } from "@/utils/utils";
+import { useEffect, useState } from "react";
 import { Badge } from "../ShadcnUi/badge";
 import { Separator } from "../ShadcnUi/separator";
-import { deleteEvent } from "@/requests/requests";
+import {
+	deleteEvent,
+	fetchDocumentDownloadUrl,
+	fetchDocuments,
+} from "@/requests/requests";
 import { useToast } from "../ShadcnUi/use-toast";
 
-// Format description
-// Add list of files
-// delete button -> make it red and add a popup to confirm -> toast
-
-// TODO: move these components from the column definitions module
 const EventDialog = ({
 	name,
 	category,
@@ -39,6 +38,23 @@ const EventDialog = ({
 }) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const { toast } = useToast();
+
+	const [documents, setDocuments] = useState<EventDocument[]>([]);
+
+	useEffect(() => {
+		try {
+			if (isOpen) {
+				(async function () {
+					const res = await fetchDocuments(id);
+					const { data } = await res.json();
+					setDocuments(data);
+				})();
+			}
+		} catch (e) {
+			console.log("Something went wrong while fetching documents", e);
+			setDocuments([]);
+		}
+	}, [isOpen, id]);
 
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -60,7 +76,34 @@ const EventDialog = ({
 				</div>
 				<Separator />
 				<div className="min-h-[50px] p-1">{description}</div>
-				<div></div>
+				<div>
+					{documents.map((document) => (
+						<div key={document.id}>
+							<div className="flex justify-between align-middle pl-1 pr-1">
+								<div>{document.name}</div>
+								<Download
+									size={16}
+									className="self-center"
+									onClick={async () => {
+										if (document.name !== undefined) {
+											try {
+												const res = await fetchDocumentDownloadUrl(
+													document.name
+												);
+												const { downloadUrl } = await res.json();
+												downloadFile(downloadUrl, document.name);
+											} catch (e) {
+												console.error(e);
+												toast({ title: "Something went wrong" });
+											}
+										}
+									}}
+								/>
+							</div>
+							<Separator />
+						</div>
+					))}
+				</div>
 				<DialogFooter>
 					<DeleteItemDialog
 						title="Are you sure you want to delete this event?"

@@ -47,7 +47,7 @@ export type Event = {
 	documents?: EventDocument[];
 };
 
-export interface CreateEventForm {
+export interface CreateEventFormType {
 	name: string;
 	description: string;
 	eventDate: Date;

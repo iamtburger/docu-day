@@ -15,11 +15,11 @@ import { SearchEventFormSchema, SearchEventsFormType } from "@/data/types";
 import {
 	eventName,
 	eventDate,
-	// openEvent,
 	composeOpenEventColumn,
 } from "@/components/DocumentSelectorTable/columnDefinitions";
 import { fetchEvents } from "@/requests/requests";
 import DataTable from "@/components/DataTable/DataTable";
+import { composeSearchParams } from "@/utils/utils";
 
 const SearchEventsForm = ({
 	defaultValues,
@@ -97,25 +97,6 @@ const SearchEventsForm = ({
 		</>
 	);
 };
-
-function composeSearchParams(
-	arg: {
-		[key: string]: string | number | undefined | Date;
-	},
-	emptyValues: { [key: string]: string | undefined }
-) {
-	const keysArray = Object.keys(arg);
-	if (keysArray.length === 0) {
-		return "";
-	}
-	return keysArray.reduce((acc, curr) => {
-		if (emptyValues[curr] !== arg[curr]) {
-			acc = `${acc}${acc === "?" ? "" : "&"}${curr}=${arg[curr]}`;
-			return acc;
-		}
-		return acc;
-	}, "?");
-}
 
 const searchEventFormEmptyValues: Record<string, string | undefined> = {
 	searchTerm: "",

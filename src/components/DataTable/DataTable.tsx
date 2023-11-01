@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
 	ColumnDef,
 	useReactTable,
@@ -26,6 +26,7 @@ interface DocumentsSelectorTableProps<TData, TValue> {
 	isLoading: boolean;
 	globalFilter?: string;
 	setGlobalFilter?: Dispatch<SetStateAction<string>>;
+	defaultRowSelection?: number[];
 }
 
 function DataTable<TData, TValue>({
@@ -34,6 +35,7 @@ function DataTable<TData, TValue>({
 	setGlobalFilter,
 	isLoading = false,
 	globalFilter = "",
+	defaultRowSelection,
 }: DocumentsSelectorTableProps<TData, TValue>) {
 	const [rowSelection, setRowSelection] = useState({});
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -48,6 +50,7 @@ function DataTable<TData, TValue>({
 		getFilteredRowModel: getFilteredRowModel(),
 		onSortingChange: setSorting,
 		getSortedRowModel: getSortedRowModel(),
+		getRowId: (row: any, index) => (row?.id !== undefined ? row.id : index),
 		state: {
 			rowSelection,
 			columnFilters,
@@ -106,6 +109,7 @@ function getTableContent<TData>(
 						key={row.id}
 						data-state={row.getIsSelected() && "selected"}
 						className="h-12"
+						id={row.id}
 					>
 						{row.getVisibleCells().map((cell) => (
 							<TableCell key={cell.id} className="pt-1 pb-1">

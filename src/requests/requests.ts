@@ -25,7 +25,9 @@ export const createDocument = (fileName: string, userId: string) =>
 		}),
 	});
 
-export const fetchDocuments = () => fetch(ApiEndpoints.DOCUMENTS);
+export const fetchDocuments = (id?: number) => {
+	return fetch(`${ApiEndpoints.DOCUMENTS}${id ? `?eventId=${id}` : ""}`);
+};
 
 // TODO: add support for creating multiple categories
 export const createCategory = (category: string) =>
@@ -51,3 +53,6 @@ export const fetchEvents = (params?: string) => {
 
 export const deleteEvent = (id: number) =>
 	fetch(`${ApiEndpoints.DELETE}?id=${id}`, { method: "DELETE" });
+
+export const editEvent = (id: number) =>
+	fetch(`${ApiEndpoints.EVENT}?eventId=${id}`, { method: "PATCH" });
